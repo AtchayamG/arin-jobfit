@@ -17,27 +17,25 @@ export function testCliFlags(packageName: string, binName: string): CliCheckResu
     shell: isWin,
   });
   const verOut = (verRes.stdout || "").trim();
-  const verPass = verRes.status === 0 && verOut === "0.1.0";
+  const verPass = verRes.status === 0 && verOut === "0.1.1";
 
-  // 2. --help
+  // 2. --help (must contain exact bin name)
   const helpRes = spawnSync(cmd, ["-y", packageName, "--help"], {
     encoding: "utf-8",
     timeout: 30000,
     shell: isWin,
   });
   const helpOut = (helpRes.stdout || "").trim();
-  const helpPass =
-    helpRes.status === 0 &&
-    (helpOut.includes(binName) || helpOut.includes("Arin JobFit") || helpOut.includes("Usage:"));
+  const helpPass = helpRes.status === 0 && helpOut.includes(binName);
 
-  // 3. unknown arg
+  // 3. unknown arg (must exit 2 AND print "Usage: <exact bin name>")
   const unkRes = spawnSync(cmd, ["-y", packageName, "--unknown-flag"], {
     encoding: "utf-8",
     timeout: 30000,
     shell: isWin,
   });
   const unkOut = (unkRes.stderr || unkRes.stdout || "").trim();
-  const unkPass = unkRes.status !== 0 || unkOut.includes("Usage:") || unkOut.includes("Unknown");
+  const unkPass = unkRes.status === 2 && unkOut.includes(`Usage: ${binName}`);
 
   return {
     version: { pass: verPass, output: verOut },
@@ -154,8 +152,11 @@ export async function testPersistence(
 
 export async function testErrorPaths(
   server: { client: import("@modelcontextprotocol/client").Client },
+  toolsList: Array<{ name: string; outputSchema?: unknown }>,
   knownLimitations: string[],
-): Promise<{ missingArgsPass: boolean; unknownIdPass: boolean; oversizedPass: boolean }> {
+): Promise<{ missingArgsPass: boolean; unknownIdPass: boolean; oversizedPass: boolean; errorValidations: number }> {
+  let errorValidations = 0;
+
   // 1. Missing args: jobs_get without job_id
   let missingArgsPass = false;
   try {
@@ -183,6 +184,9 @@ export async function testErrorPaths(
     );
     const content = res.structuredContent as { status?: string; error?: { code?: string } };
     unknownIdPass = res.isError === true && (content.status === "error" || !content.status);
+    if (res.structuredContent) {
+      errorValidations++;
+    }
   } catch {
     unknownIdPass = false;
   }
@@ -209,5 +213,5 @@ export async function testErrorPaths(
     knownLimitations.push("Doc 17 §8: Input > 50,000 chars rejected at schema/sanitizer level");
   }
 
-  return { missingArgsPass, unknownIdPass, oversizedPass };
+  return { missingArgsPass, unknownIdPass, oversizedPass, errorValidations };
 }
