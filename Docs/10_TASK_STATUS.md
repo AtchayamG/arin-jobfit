@@ -13,13 +13,16 @@ Last updated: 2026-09-25 (Review 1) by Claude. Plan: Doc 15. Work packages: Doc 
 | WP-SH-000 scaffold | Codex | PASS |
 | WP-SH-001 contract schemas + envelope | Codex | PASS (R-1, R-2 carried to SH-003) |
 | WP-SH-002 policy gate engine | AGY | PASS (R-4 carried to SH-004) |
-| WP-SH-003 normalize/extract/taxonomy | Codex | IN PROGRESS (R-1/R-2 committed 3dcdb91; main work uncommitted; paused on Codex usage limit until 18:25 IST) |
+| WP-SH-003 normalize/extract/taxonomy | Codex | PASS (fixes R-7..R-11 → SH-010) |
 | WP-SH-004 sanitize/url/adversarial corpus | AGY | PASS |
 | WP-SH-005 match/dedupe | AGY (reassigned) | PASS |
 | WP-SH-006 prepare builders | AGY | PASS |
 | WP-SH-007 store | AGY (reassigned) | PASS |
 
 | WP-SH-009 review-2a fixes (R-5, R-6) | AGY | PASS |
+
+| WP-SH-010 SH-003 review fixes | AGY | READY |
+| WP-SH-008 MCP tool-kit (Phase 2) | Codex | READY |
 
 ## Phases 2–8
 See Doc 15 §3. Provider adapters (P7): BLOCKED_BY_PROVIDER_APPROVAL.
