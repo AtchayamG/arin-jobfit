@@ -1,5 +1,10 @@
 # Arin JobFit — Naukri edition
 
+[![arin-jobfit-nk on npm](https://img.shields.io/npm/v/arin-jobfit-nk)](https://www.npmjs.com/package/arin-jobfit-nk)
+[![arin-jobfit-id on npm](https://img.shields.io/npm/v/arin-jobfit-id)](https://www.npmjs.com/package/arin-jobfit-id)
+[![CI](https://github.com/AtchayamG/arin-jobfit/actions/workflows/ci.yml/badge.svg)](https://github.com/AtchayamG/arin-jobfit/actions/workflows/ci.yml)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](../LICENSE)
+
 An independent, local-first MCP server for organizing and analyzing user-provided job information. It is not affiliated with, endorsed by, or operated by Naukri or Info Edge.
 
 ## Privacy and human control
@@ -15,6 +20,22 @@ The server exposes the 22 tools in the shared [tool manifest](../shared/contract
 ```sh
 npx -y arin-jobfit-nk
 ```
+
+Claude Code:
+
+```sh
+claude mcp add -s user arin-jobfit-nk -- npx -y arin-jobfit-nk
+```
+
+Codex (`~/.codex/config.toml` or `%USERPROFILE%\\.codex\\config.toml`):
+
+```toml
+[mcp_servers.arin-jobfit-nk]
+command = "npx"
+args = ["-y", "arin-jobfit-nk"]
+```
+
+On Windows, use `npx.cmd` for `command`.
 
 ## Build from source
 
