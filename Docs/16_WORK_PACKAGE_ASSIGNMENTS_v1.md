@@ -14,7 +14,7 @@ Rule: Codex and AGY never own the same file in the same period. A WP may only mo
 | WP-SH-003 | Codex | STANDARD | P1 | SH-001 | normalization, requirement/skill extraction, skills taxonomy v1, provider hints | **READY** |
 | WP-SH-004 | AGY | STANDARD | P1 | SH-001 | untrusted-text sanitizer, injection detector, URL validator, adversarial corpus | **READY** |
 | WP-SH-005 | Codex | STANDARD | P1 | SH-003 | fit-v1 matching, explain, shortlist, dedupe | planned |
-| WP-SH-006 | AGY | STANDARD | P1 | SH-003 | CV-notes, interview, handoff builders + truthfulness invariant | planned |
+| WP-SH-006 | AGY | STANDARD | P1 | SH-003 | CV-notes, interview, handoff builders + truthfulness invariant | **READY (pulled forward)** |
 | WP-SH-007 | Codex | STANDARD | P1 | SH-001 | store interfaces, node:sqlite impl, migrations, retention, audit, export/purge | planned |
 | WP-SH-008 | Codex | HIGH | P2 | SH-002..007, BCP-001/002 | MCP tool-kit on SDK v2: tool defs, handlers, pipeline, result mapping | planned |
 | WP-NK-001 | Codex | STANDARD | P2 | SH-008 | naukri-mcp product: config, stdio entry, bundle, client install docs | planned |
@@ -302,6 +302,50 @@ If AGY needs a new npm dependency or a package.json script, AGY STOPs and reques
 **Tests:** 100% branch coverage of `src/sanitize`; the corpus table; URL cases (including `http:`, `file:`, `javascript:`, `127.0.0.1`, `[::1]`, `169.254.169.254`, `2130706433`, `0x7f.1`, `user@naukri.com`, `naukri.com:8443`, Cyrillic homograph).
 
 **Acceptance:** scoped tests and `npm run verify` green. Commits: `WP-SH-004: review-1 fix` and `WP-SH-004: sanitizer, injection detector, url validator`.
+
+## 3C. WP-SH-006 — Preparation builders (AGY, STANDARD) — pulled forward 2026-09-25
+
+This package was pulled forward while Codex is paused on its usage limit. It depends only on the **committed** schemas (`src/schemas`), not on SH-003 code.
+
+**Owns:**
+- `shared/job-core/src/prepare/**`, `tests/prepare/**`
+- `Docs/handovers/WP-SH-006.md`
+
+**Must not touch:** Codex's uncommitted SH-003 work-in-progress (`src/normalize/**`, `src/extract/**`, `data/**`, `tests/normalize/**`, `tests/extract/**`, `tests/fixtures/jd/**`, `src/index.ts`, `tsup.config.ts`). Do not import from `src/normalize` or `src/extract`. Take `Job`, `Requirements` and `Profile` (types from `src/schemas`) as inputs.
+
+**Requirements:**
+
+1. `src/prepare/schemas.ts` holds zod output schemas for everything below (strict; limits as stated).
+2. `buildCvNotes(job, requirements, profile, profileRef)` → `{job_id, profile_ref, emphasize, gaps, do_not_claim, unassessed, truthfulness_note}`:
+   - `profile_ref` = `ProfileId` or `"inline"`.
+   - `emphasize`: up to 100 entries of `{requirement ≤500, requirement_kind: must_have|preferred, profile_evidence[1..5] {field_path ≤100, text ≤300}}`.
+   - `gaps`: up to 100 entries of `{requirement ≤500, requirement_kind, missing_skills: SkillName[]}`.
+   - `do_not_claim`: up to 100 strings of ≤200 chars, one per required skill with no evidence ("No evidence in profile for <skill>; do not claim it.").
+   - `unassessed`: up to 100 strings of ≤500 chars (requirements that have no skills).
+   - `truthfulness_note` is fixed text.
+   - **Evidence search** per requirement skill (case-insensitive, symbol-safe word boundary, so `Go` ≠ `Google`, and `C++` and `.NET` are safe): `skills[i].name` (equality), `roles[i].title`, `roles[i].highlights[j]`, `certifications[i].name`, `education[i].qualification`, `summary_text`.
+   - `field_path` uses the form `skills[2].name` or `roles[0].highlights[3]`.
+   - **INVARIANT (T-08):** every `profile_evidence.text` is an exact substring of the value found at `field_path` in the profile. A snippet of ≤300 chars around the match is allowed.
+3. `buildInterviewPlan(job, requirements, profile)` → `{job_id, topics[≤40] {topic ≤200, source: jd|gap, requirement_ref ≤500, question_seeds[≤5] ≤300, study_pointers[≤5] ≤300}}`:
+   - Deterministic templates.
+   - Order: matched must-have, then must-have gaps, then preferred, then the top 5 responsibilities.
+   - Gap topics carry an honest-answer pointer ("prepare a truthful account of your exposure to <skill>").
+   - **No URLs** anywhere in study pointers.
+4. `buildApplicationHandoff(job)` → `{data: {official_url, url_is_official, checklist[≤15], human_only_fields}, humanAction: {reason, actions, official_url}, warnings}`:
+   - `human_only_fields` is fixed: `screening_answers`, `salary_declaration`, `notice_period`, `personal_information_changes`, `final_submit`.
+   - A null URL gives the checklist item "Open the listing on the official portal yourself".
+   - A non-official URL gives the `URL_NOT_OFFICIAL` warning.
+   - It never performs or simulates submission.
+5. Pure functions: no I/O, no `any`, no console. Deterministic (same input → identical output). Files ≤ 250 lines.
+
+**Tests (100% branch coverage of src/prepare):**
+- ≥ 2 synthetic profiles and hand-built `Job`/`Requirements` objects that validate under the schemas.
+- The invariant checked over ≥ 200 seeded pseudo-random profiles, using an in-repo seeded PRNG (no new dependency).
+- Symbol and boundary cases.
+- Handoff cases.
+- Output schema validation and a determinism check.
+
+**Verification:** run scoped tests and a scoped lint on your own paths. If full `npm run verify` fails **only** because of Codex's uncommitted work-in-progress files, report it and do not fix it. Commit only your paths: `WP-SH-006: preparation builders`.
 
 ## 4. Handover format (mandatory for every WP)
 
