@@ -1,0 +1,96 @@
+{
+  "policy_version": "1",
+  "product": "naukri-mcp",
+  "provider": "naukri",
+  "snapshot_date": "2026-09-25",
+  "stale_after_days": 90,
+  "partner_approval_recorded": false,
+  "capabilities": [
+    {
+      "id": "l0.analysis",
+      "level": "L0",
+      "status": "enabled",
+      "reason": "Deterministic local analysis of user-provided job descriptions (pure function, no external I/O).",
+      "approval_ref": null,
+      "sources": [
+        "https://recruiterzone.naukri.com/make-your-job-posting-apply-process-seamless/"
+      ]
+    },
+    {
+      "id": "l0.local_store",
+      "level": "L0",
+      "status": "enabled",
+      "reason": "Local SQLite storage for jobs, profiles, and match results under user device control.",
+      "approval_ref": null,
+      "sources": [
+        "https://recruiterzone.naukri.com/make-your-job-posting-apply-process-seamless/"
+      ]
+    },
+    {
+      "id": "l0.agent_relay_ingest",
+      "level": "L0",
+      "status": "enabled",
+      "reason": "Generic agent relay ingestion of user-visible content into local store.",
+      "approval_ref": null,
+      "sources": [
+        "https://recruiterzone.naukri.com/make-your-job-posting-apply-process-seamless/"
+      ]
+    },
+    {
+      "id": "hosted.retain_relayed_content",
+      "level": "L1",
+      "status": "blocked_by_provider_approval",
+      "reason": "Retention of relayed content in hosted mode requires partner approval.",
+      "approval_ref": null,
+      "sources": [
+        "https://recruiterzone.naukri.com/make-your-job-posting-apply-process-seamless/"
+      ]
+    },
+    {
+      "id": "l1.provider_job_search",
+      "level": "L1",
+      "status": "blocked_by_provider_approval",
+      "reason": "Naukri provider job search requires written partner agreement.",
+      "approval_ref": null,
+      "sources": [
+        "https://recruiterzone.naukri.com/make-your-job-posting-apply-process-seamless/"
+      ]
+    },
+    {
+      "id": "l1.provider_job_detail",
+      "level": "L1",
+      "status": "blocked_by_provider_approval",
+      "reason": "Naukri provider job detail retrieval requires written partner agreement.",
+      "approval_ref": null,
+      "sources": ["https://developers.zwayam.com/customdomain"]
+    },
+    {
+      "id": "l2.account_profile_read",
+      "level": "L2",
+      "status": "blocked_by_provider_approval",
+      "reason": "Naukri account profile reading requires OAuth approval and partner agreement.",
+      "approval_ref": null,
+      "sources": ["https://developers.zwayam.com/customdomain"]
+    },
+    {
+      "id": "l3.account_write",
+      "level": "L3",
+      "status": "blocked_by_provider_approval",
+      "reason": "Naukri account write operations require explicit partner agreement.",
+      "approval_ref": null,
+      "sources": [
+        "https://recruiterzone.naukri.com/make-your-job-posting-apply-process-seamless/"
+      ]
+    },
+    {
+      "id": "l4.application_submit",
+      "level": "L4",
+      "status": "disabled",
+      "reason": "out of scope v1",
+      "approval_ref": null,
+      "sources": [
+        "https://recruiterzone.naukri.com/make-your-job-posting-apply-process-seamless/"
+      ]
+    }
+  ]
+}
