@@ -1,0 +1,38 @@
+{
+  "name": "indeed-mcp",
+  "version": "0.1.0",
+  "description": "Privacy-preserving MCP server for Indeed job search and analysis",
+  "type": "module",
+  "bin": {
+    "indeed-mcp": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "config/policy.json"
+  ],
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "lint": "eslint src tests && prettier --check .",
+    "format": "prettier --write .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "build": "tsup",
+    "policy:lint": "tsx ../shared/job-core/scripts/policy-lint.ts config/policy.json ../Docs/09_DECISIONS_LOG.md",
+    "verify": "npm run lint && npm run typecheck && npm run policy:lint && npm run build && npm run test"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@modelcontextprotocol/client": "^2.1.0",
+    "@types/node": "^26.6.2",
+    "eslint": "^10.11.0",
+    "prettier": "^3.9.9",
+    "tsup": "^8.5.1",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.70.1",
+    "vitest": "^5.0.1"
+  }
+}

@@ -1,0 +1,43 @@
+# Gemini CLI MCP Integration
+
+> **Status:** UNVERIFIED — to be confirmed in WP-CMP-001
+
+Documentation reference: [Gemini CLI MCP Server Documentation](https://github.com/google-gemini/gemini-cli/blob/main/docs/tools/mcp-server.md)
+
+---
+
+## Configuration (`settings.json`)
+
+To configure `indeed-mcp` with Gemini CLI, add the server specification under `mcpServers` in your Gemini CLI `settings.json` file.
+
+### Windows Configuration
+
+```json
+{
+  "mcpServers": {
+    "indeed-mcp": {
+      "command": "node",
+      "args": ["D:\\Work\\Codex\\Job-Portal-MCPs\\indeed-mcp\\dist\\index.js"],
+      "env": {
+        "INDEED_MCP_DATA_DIR": "%APPDATA%\\indeed-mcp"
+      }
+    }
+  }
+}
+```
+
+### POSIX Configuration (Linux / macOS)
+
+```json
+{
+  "mcpServers": {
+    "indeed-mcp": {
+      "command": "node",
+      "args": ["/home/user/Work/Job-Portal-MCPs/indeed-mcp/dist/index.js"],
+      "env": {
+        "INDEED_MCP_DATA_DIR": "/home/user/.local/share/indeed-mcp"
+      }
+    }
+  }
+}
+```
