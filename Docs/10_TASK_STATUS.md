@@ -28,5 +28,9 @@ Last updated: 2026-09-25 (Review 1) by Claude. Plan: Doc 15. Work packages: Doc 
 | WP-IN-001 indeed-mcp product (stdio) | AGY | PASS |
 | WP-SEC-001A security review job-core + indeed-mcp | AGY | PASS (F-1 Low → QA-001) |
 
+| WP-SH-012 Indian grouping / rounding / F-1 | AGY | PASS (F-1 documented limitation) |
+| WP-SEC-001B naukri-mcp security | AGY | IN PROGRESS |
+| WP-REL-001 release packaging (Arin JobFit) | Codex | READY |
+
 ## Phases 2–8
 See Doc 15 §3. Provider adapters (P7): BLOCKED_BY_PROVIDER_APPROVAL.

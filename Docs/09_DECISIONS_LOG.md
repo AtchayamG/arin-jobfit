@@ -51,3 +51,11 @@ Written portal approvals are recorded here under a heading `APPROVAL-NAUKRI-NNN`
 - This supersedes the earlier "no Arin branding in public connector names" rule, by owner decision.
 - The name may be revisited if Naukri or Indeed give naming or trademark guidance. Before any paid launch: run a trademark search and get a lawyer's review.
 - Internal folder names (`naukri-mcp`, `indeed-mcp`) stay until the release-prep work package renames packaging and serverInfo.
+
+## 2026-09-25 — Open-source release decisions (owner)
+
+- License: **Apache-2.0** for the whole repository.
+- `Docs/` is public. It holds the architecture, threat model, decisions and handovers, which document the multi-agent build process.
+- `Prompts/` stays public as part of the process story. Mailbox message IDs were redacted from Doc 13. Git history keeps the commit author email, which the owner accepted.
+- `MANIFEST.json` was removed. It was a stale packaging artifact; git is now the integrity record.
+- Release packaging goes to WP-REL-001.
