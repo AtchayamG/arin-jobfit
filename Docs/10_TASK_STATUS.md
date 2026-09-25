@@ -25,7 +25,7 @@ Last updated: 2026-09-25 (Review 1) by Claude. Plan: Doc 15. Work packages: Doc 
 | WP-SH-008 MCP tool-kit (Phase 2) | Codex+AGY | PASS |
 
 | WP-NK-001 naukri-mcp product (stdio) | Codex | READY |
-| WP-IN-001 indeed-mcp product (stdio) | AGY | CHANGES REQUIRED (R-12) |
+| WP-IN-001 indeed-mcp product (stdio) | AGY | PASS |
 
 ## Phases 2–8
 See Doc 15 §3. Provider adapters (P7): BLOCKED_BY_PROVIDER_APPROVAL.
