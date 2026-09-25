@@ -26,18 +26,25 @@ export const envelopeMetaSchema = z.strictObject({
 });
 
 export const envelopeSchema = <T extends z.ZodType>(dataSchema: T) =>
-  z.strictObject({
-    contract_version: z.literal("1.0.0"),
-    status: z.enum(["ok", "partial", "error"]),
-    provider: providerIdSchema,
-    capability_mode: capabilityLevelSchema,
-    source_provenance: z.array(provenanceSchema),
-    data: dataSchema.nullable(),
-    warnings: z.array(warningSchema),
-    human_action_required: humanActionSchema.nullable(),
-    error: toolErrorSchema.nullable(),
-    meta: envelopeMetaSchema,
-  });
+  z
+    .strictObject({
+      contract_version: z.literal("1.0.0"),
+      status: z.enum(["ok", "partial", "error"]),
+      provider: providerIdSchema,
+      capability_mode: capabilityLevelSchema,
+      source_provenance: z.array(provenanceSchema),
+      data: dataSchema.nullable(),
+      warnings: z.array(warningSchema),
+      human_action_required: humanActionSchema.nullable(),
+      error: toolErrorSchema.nullable(),
+      meta: envelopeMetaSchema,
+    })
+    .refine(
+      (value) =>
+        (value.status === "error") === (value.error !== null) &&
+        (value.status !== "error" || ("data" in value && value.data === null)),
+      { message: "Error status requires an error and null data; non-error status forbids error" },
+    );
 
 export type Envelope<T> = z.infer<ReturnType<typeof envelopeSchema<z.ZodType<T>>>>;
 export type HumanAction = z.infer<typeof humanActionSchema>;
