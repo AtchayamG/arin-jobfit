@@ -13,7 +13,7 @@ Rule: Codex and AGY never own the same file in the same period. A WP may only mo
 | WP-SH-002 | AGY | STANDARD | P1 | SH-000 | policy/capability gate engine, policy-lint, product policy.json files | **PASS (review 1)** |
 | WP-SH-003 | Codex | STANDARD | P1 | SH-001 | normalization, requirement/skill extraction, skills taxonomy v1, provider hints | **READY** |
 | WP-SH-004 | AGY | STANDARD | P1 | SH-001 | untrusted-text sanitizer, injection detector, URL validator, adversarial corpus | **READY** |
-| WP-SH-005 | Codex | STANDARD | P1 | SH-003 | fit-v1 matching, explain, shortlist, dedupe | planned |
+| WP-SH-005 | **AGY** (reassigned 2026-09-25) | STANDARD | P1 | SH-001 | fit-v1 matching, explain, shortlist, dedupe | planned |
 | WP-SH-006 | AGY | STANDARD | P1 | SH-003 | CV-notes, interview, handoff builders + truthfulness invariant | **READY (pulled forward)** |
 | WP-SH-007 | **AGY** (reassigned 2026-09-25) | STANDARD | P1 | SH-001 | store interfaces, node:sqlite impl, migrations, retention, audit, export/purge | planned |
 | WP-SH-008 | Codex | HIGH | P2 | SH-002..007, BCP-001/002 | MCP tool-kit on SDK v2: tool defs, handlers, pipeline, result mapping | planned |
@@ -425,6 +425,67 @@ Reassigned to AGY because Codex is paused on its usage limit. The package depend
 - The audit table contains no JD/profile text after a full workflow.
 
 **Commit:** only your paths, `WP-SH-007: local store`. If `npm run verify` fails only because of Codex's work-in-progress, report it and do not fix it.
+
+## 3E. WP-SH-005 — fit-v1 matching, explain, shortlist, dedupe (AGY, STANDARD) — reassigned 2026-09-25
+
+Reassigned to AGY while Codex is paused. It depends only on the committed `src/schemas` (`Job`, `Requirements`, `Profile`, `MatchResult`). The work-in-progress guard from §3C applies. **Do not import SH-003 code or the taxonomy**: skill categories are injected as `skillCategory?: (skill: string) => string | null`.
+
+**Owns:**
+- `shared/job-core/src/match/**`, `src/dedupe/**`, `tests/match/**`, `tests/dedupe/**`
+- `Docs/handovers/WP-SH-005.md`
+
+**Requirements:**
+
+1. **`computeFit(job, requirements, profile, {profileRef, skillCategory?})` → `{result: MatchResult, warnings: Warning[]}`** with the exact weights of Doc 17 §7.
+
+   Skill matching is case-insensitive and symbol-safe (Go ≠ Google; C++, C#, .NET, Node.js). A profile "has" a skill if `skills[].name` equals it, or it appears in `roles[].title` or `roles[].highlights[]`.
+
+   | Dimension | Rule |
+   |---|---|
+   | must_have_skills | Skills = union of `requirements.must_have[].skills` (fallback: `job.required_skills`). Score = covered/total. Status: 1 → matched, >0 → partial, 0 → missing. No skills → unknown. |
+   | preferred_skills | Same rule, using the preferred skills. |
+   | experience | Unknown if both job bounds are null. Within [min, max] → 1. Below min → `max(0, 1 − (min − y)/max(min, 1))`. Above max by ≤ 2 years → 1; beyond that → `max(0.5, 1 − (y − max − 2)·0.1)`. |
+   | seniority | Title keyword levels: intern/trainee 0; junior/associate 1; engineer/developer/analyst/consultant 2; senior/sr 3; lead/principal/staff/architect/manager 4; head/director/vp 5. Use the highest keyword present; none → unknown. Profile level from years: <1 → 0, <3 → 1, <6 → 2, <10 → 3, <15 → 4, else 5. Score = `max(0, 1 − 0.34·|diff|)`. |
+   | location_remote | Unknown if the profile has no location and no remote preference, or the job has no city and remote_mode is unknown. Remote job + remote preferred → 1. City match (case-insensitive) → 1. Accepted remote mode but different city → 0.5. Otherwise 0. |
+   | employment_type | Unknown if the job is unknown or there are no preferences. Match → 1, else 0. |
+   | domain | Unknown unless `skillCategory` is given and the job has domain-category skills. Score = overlap with the profile's domain skills ÷ the job's domain skills. |
+
+   - **Aggregation:**
+     - Unknown dimensions get `score: null` and are excluded; the remaining weights are re-normalized.
+     - `confidence` = Σ known weights.
+     - If confidence < 0.6, emit the `LOW_CONFIDENCE` warning.
+     - Round the score to 2 decimals.
+     - Bands per §7.
+   - **Deal-breakers:** each `preferences.deal_breakers` phrase is matched with word boundaries against the job title, description and requirement texts. A hit adds a blocker and caps the score at 0.30.
+   - **INVARIANT (T-09):** `requirements.discriminatory_flags` and any flagged text must never affect the score. Test that adding flags leaves the result identical.
+   - Evidence and gaps are short factual strings (≤ 500 chars) naming the matched or missing items.
+2. **`explainMatch(result)`** → `{summary_facts[], dimensions[{name, evidence[], gaps[]}], disclaimer}`. A pure transform; the fixed disclaimer comes from §7.
+3. **`shortlist(items: {job, requirements}[], profile, {limit ≤ 50, profileRef, skillCategory?})`** → `ranked[{job_id, fit_score, band, top_reasons ≤ 3, blockers}]`.
+   - Sort by score descending, then `job_id` ascending.
+   - Deterministic.
+4. **Dedupe:**
+   - `findDuplicates(jobs: Job[2..50])` → `groups[{job_ids, evidence[]}]` using union-find.
+   - Two jobs are duplicates on an identical `fingerprint`, **or** when all of these hold:
+     - both companies are non-null and equal after normalization (lowercase; strip pvt ltd / private limited / ltd / limited / inc / llc / corp / punctuation)
+     - title-token Jaccard ≥ 0.8
+     - description 5-word-shingle Jaccard ≥ 0.85 (first 20,000 chars)
+   - `checkIngestDuplicates(newJob, existing: Job[])` → matches, used for the `DUPLICATE_SUSPECTED` warning.
+   - Performance: 50 jobs × 20,000 chars < 500 ms.
+5. Pure functions: no I/O, no `any`, no console. Files ≤ 250 lines. Output validates against `matchResultSchema`.
+
+**Tests (≥ 95% branch coverage of src/match and src/dedupe):**
+- A table for each dimension, including boundaries.
+- Re-normalization.
+- Low confidence.
+- Deal-breaker cap.
+- Discriminatory-flag invariance.
+- Symbol-safe matching.
+- Determinism.
+- Shortlist ordering and ties.
+- Dedupe positives and negatives: same title at a different company → not a duplicate; reposted with minor edits → duplicate.
+- Performance.
+
+**Commit:** `WP-SH-005: matching and dedupe`. If `npm run verify` fails only because of Codex's work-in-progress, report it and do not fix it.
 
 ## 4. Handover format (mandatory for every WP)
 
