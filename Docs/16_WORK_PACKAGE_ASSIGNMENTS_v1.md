@@ -15,7 +15,7 @@ Rule: Codex and AGY never own the same file in the same period. A WP may only mo
 | WP-SH-004 | AGY | STANDARD | P1 | SH-001 | untrusted-text sanitizer, injection detector, URL validator, adversarial corpus | **READY** |
 | WP-SH-005 | Codex | STANDARD | P1 | SH-003 | fit-v1 matching, explain, shortlist, dedupe | planned |
 | WP-SH-006 | AGY | STANDARD | P1 | SH-003 | CV-notes, interview, handoff builders + truthfulness invariant | **READY (pulled forward)** |
-| WP-SH-007 | Codex | STANDARD | P1 | SH-001 | store interfaces, node:sqlite impl, migrations, retention, audit, export/purge | planned |
+| WP-SH-007 | **AGY** (reassigned 2026-09-25) | STANDARD | P1 | SH-001 | store interfaces, node:sqlite impl, migrations, retention, audit, export/purge | planned |
 | WP-SH-008 | Codex | HIGH | P2 | SH-002..007, BCP-001/002 | MCP tool-kit on SDK v2: tool defs, handlers, pipeline, result mapping | planned |
 | WP-NK-001 | Codex | STANDARD | P2 | SH-008 | naukri-mcp product: config, stdio entry, bundle, client install docs | planned |
 | WP-IN-001 | AGY | STANDARD | P2 | SH-008 | indeed-mcp product: same, independent | planned |
@@ -346,6 +346,85 @@ This package was pulled forward while Codex is paused on its usage limit. It dep
 - Output schema validation and a determinism check.
 
 **Verification:** run scoped tests and a scoped lint on your own paths. If full `npm run verify` fails **only** because of Codex's uncommitted work-in-progress files, report it and do not fix it. Commit only your paths: `WP-SH-006: preparation builders`.
+
+## 3D. WP-SH-007 — Local store (AGY, STANDARD) — reassigned from Codex 2026-09-25
+
+Reassigned to AGY because Codex is paused on its usage limit. The package depends only on the committed `src/schemas`. The same work-in-progress guard as §3C applies: do not touch Codex's uncommitted SH-003 files, `src/index.ts`, `tsup.config.ts`, `package.json` or the lockfile. **No new dependencies.** `node:sqlite` is built into Node ≥ 22.13.
+
+**Owns:**
+- `shared/job-core/src/store/**`, `tests/store/**`
+- `Docs/handovers/WP-SH-007.md`
+
+**Requirements:**
+
+1. **Data directory.** `resolveDataDir({envValue, product, platform, home, appData, xdgDataHome})` is a pure function.
+   - `envValue` (from `NAUKRI_MCP_DATA_DIR` / `INDEED_MCP_DATA_DIR`, read by the caller) must be absolute.
+   - Reject relative paths, UNC/`\\?\` paths and system roots (`/`, `C:\`, `/etc`, `/usr`, `/bin`, `/System`, `C:\Windows`, `C:\Program Files`).
+   - Defaults:
+     - Windows: `%APPDATA%\<product>`
+     - macOS: `~/Library/Application Support/<product>`
+     - Linux: `$XDG_DATA_HOME/<product>`, else `~/.local/share/<product>`
+   - `openStore` creates the directory recursively with mode `0o700` (best effort on Windows). `src/store` is the **only** job-core module allowed filesystem I/O.
+2. **Opening.** `openStore({dataDir | memory: true, product, now})` opens `<dataDir>/<product>.sqlite3` using `node:sqlite` `DatabaseSync`.
+   - Set `PRAGMA journal_mode=WAL` and `foreign_keys=ON`.
+   - Run migrations.
+   - Run retention.
+   - Return a `Store` with `jobs`, `profiles`, `audit`, `rights` and `close()`.
+3. **Schema v1:**
+   - `meta(key PK, value)`, holding `schema_version` and `audit_salt` (32 random bytes, hex)
+   - `jobs(job_id PK, fingerprint, ingested_at, retention_class, remote_mode, employment_type, search_text, json)`, with indexes on fingerprint and (ingested_at, job_id)
+   - `profiles(profile_id PK, label, updated_at, json)`
+   - `audit(id INTEGER PK, at, tool, request_id, outcome, error_code, subject_hash)`
+   - `purge_tokens(token PK, expires_at, used)`
+   - Stored JSON is validated with the zod schema on read. A corrupt row → `StoreError('CORRUPT_ROW')`.
+4. **JobRepo:**
+   - `insert(job)` (validated; enforces the 10,000 limit → `LIMIT_EXCEEDED`)
+   - `get(id)`
+   - `findByFingerprint(fp)`
+   - `list({filters, pageSize≤50, cursor})`
+   - `search({query≤200, filters, pageSize, cursor})`
+   - `delete(id)` → boolean
+   - `count()`
+   - `recent(limit≤500)` (for dedupe)
+   - Filters: `remote_mode[]`, `employment_type[]`, `retention_class[]`.
+   - Order: `ingested_at DESC, job_id DESC`.
+   - Opaque keyset cursor: base64url of `{ingested_at, job_id}`, validated on decode.
+   - Search: case-insensitive `LIKE ... ESCAPE '\'` over `search_text` (lowercased title, company, location, skills and description), with `%`, `_` and `\` escaped.
+   - List returns `JobSummary` items.
+5. **ProfileRepo:**
+   - `upsert(profileInput, {profileId?, now})`: creates `prof_<uuid>`, sets `created_at`/`updated_at`, enforces the 50-profile limit.
+   - `get`, `list` (`{profile_id, label, updated_at}`), `delete`, `count`.
+6. **IDs.**
+   - A malformed ID → `StoreError('INVALID_ID')` before any query.
+   - An unknown ID → `null` / `false`.
+7. **Audit.**
+   - `append({tool, requestId, outcome: ok|error, errorCode?, subjectId?})` stores `subject_hash` = first 16 hex of sha256(salt + subjectId).
+   - **No text, no PII, no payloads.**
+   - `list(limit)` is used for tests only.
+8. **Data rights:**
+   - `exportAll(now)` → `{export_version: "1", exported_at, jobs: Job[], profiles: Profile[]}` (no audit).
+   - `createPurgeToken(now)` → `{token: cfm_<uuid>, expires_at (+5 min), summary: {jobs, profiles}}`.
+   - `purge(token, now)`: single use; unknown, used or expired → `StoreError('CONFIRMATION_INVALID')`. Deletes jobs, profiles, audit and tokens, then appends one audit event for the purge.
+9. **Retention at open:**
+   - Delete `session` jobs.
+   - Delete `standard_180d` jobs older than 180 days (by `ingested_at`, using the injected `now`).
+   - Never delete `pinned` jobs.
+10. **SQL safety.** Prepared statements with bound parameters only. A test scans `src/store/**` and fails if any string passed to `prepare`/`exec` contains `${` or is built with `+`.
+11. `StoreError` codes: `INVALID_ID`, `LIMIT_EXCEEDED`, `CONFIRMATION_INVALID`, `CORRUPT_ROW`, `INVALID_DATA_DIR`. Messages never include row content.
+
+**Tests (≥ 95% branch coverage of src/store):**
+- Everything runs in memory, except one temp-directory test (cleaned up) covering file creation and reopening persistence.
+- Pagination across pages.
+- Search escaping (`%`, `_`).
+- Limits.
+- Retention boundaries.
+- Purge token lifecycle.
+- Corrupt-row handling.
+- `resolveDataDir` matrix.
+- SQL-safety scan.
+- The audit table contains no JD/profile text after a full workflow.
+
+**Commit:** only your paths, `WP-SH-007: local store`. If `npm run verify` fails only because of Codex's work-in-progress, report it and do not fix it.
 
 ## 4. Handover format (mandatory for every WP)
 
