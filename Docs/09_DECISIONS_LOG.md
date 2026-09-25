@@ -43,3 +43,11 @@ Written portal approvals are recorded here under a heading `APPROVAL-NAUKRI-NNN`
 - BCP-001, BCP-002, BCP-003 and BCP-004 were approved as recommended. Blueprints 02 and 03 and Shared Contract 04 were amended the same day.
 - BCP-003 follow-up: a short clarification email to Indeed was authorized ("send mail if needed"). It is recorded in Doc 13.
 - BCP-004: the public brand is still to be chosen by the owner before Phase 5.
+
+## 2026-09-25 — Public brand (BCP-004, owner choice "A")
+
+- Public brand: **Arin JobFit**. The GitHub repo will be `arin-jobfit`, with one repo holding both products.
+- Product IDs and package names: `arin-jobfit-nk` (Naukri edition) and `arin-jobfit-id` (Indeed edition). Portal names appear only in descriptions and taglines, always with a not-affiliated disclaimer, and never in package names.
+- This supersedes the earlier "no Arin branding in public connector names" rule, by owner decision.
+- The name may be revisited if Naukri or Indeed give naming or trademark guidance. Before any paid launch: run a trademark search and get a lawyer's review.
+- Internal folder names (`naukri-mcp`, `indeed-mcp`) stay until the release-prep work package renames packaging and serverInfo.
