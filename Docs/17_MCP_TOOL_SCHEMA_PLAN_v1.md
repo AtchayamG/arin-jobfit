@@ -173,3 +173,96 @@ Required for Gemini CLI, Kimi, Grok and OpenAI compatibility:
 | Profiles | 50 |
 | Page size | 50 |
 | Regex processing per field | < 50 ms at the maximum input size (tested) |
+
+## 6A. Authoritative field definitions (Addendum 2026-09-25, resolves WP-SH-001 query)
+
+Conventions: all objects strict. `T|null` fields are required keys whose value may be null. Timestamps are RFC 3339 UTC strings. Arrays of strings are de-duplicated by the producer. Money amounts are in whole currency units (INR 1,200,000, not "12 lakh").
+
+**Common**
+- `JobId`: `^job_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$` (lowercase UUID v4)
+- `ProfileId`: same pattern with the `prof_` prefix
+- `Fingerprint`: `^sha256:[0-9a-f]{64}$`
+- `RemoteMode`: onsite | hybrid | remote | unknown
+- `EmploymentType`: full_time | part_time | contract | internship | temporary | unknown
+- `RetentionClass`: session | standard_180d | pinned
+- `SkillName`: string 1–100 (canonical taxonomy name)
+- `Location`: `{raw: string≤200|null, city: string≤100|null, country: ^[A-Z]{2}$|null}` (ISO 3166-1 alpha-2)
+- `Experience`: `{min_years: number 0–60|null, max_years: number 0–60|null, raw: string≤100|null}`; refine: min ≤ max when both are non-null
+- `Compensation`: `{raw: string≤200|null, currency: ^[A-Z]{3}$|null, min: number 0–1e9|null, max: number 0–1e9|null, period: year|month|hour|unknown, disclosed: boolean}`; refine: min ≤ max when both are non-null
+
+**Job** (stored/normalized)
+- `job_id`: JobId
+- `provider`: ProviderId
+- `provider_job_id`: string≤100|null
+- `source_url`: https uri ≤2048|null
+- `source_url_is_official`: boolean
+- `title`: 1–200
+- `company`: ≤200|null
+- `location`: Location
+- `remote_mode`: RemoteMode
+- `employment_type`: EmploymentType
+- `experience`: Experience
+- `compensation`: Compensation
+- `description`: 1–50,000 (sanitized)
+- `required_skills`, `preferred_skills`: SkillName[≤100]
+- `responsibilities`, `qualifications`: string≤1000[≤100]
+- `posted_at`: date-time|null (only an absolute, parseable date; otherwise null)
+- `posted_at_raw`: string≤100|null
+- `ingested_at`: date-time
+- `source_provenance`: Provenance[1..10]
+- `retention_class`: RetentionClass
+- `fingerprint`: Fingerprint
+- `flags`: Warning[≤50]
+
+**JobSummary** (list/search items)
+- `job_id`, `provider`, `title`, `company`, `remote_mode`, `employment_type`, `ingested_at`, `retention_class`, `source_url_is_official`: as in Job
+- `location_raw`: string≤200|null
+- `experience_min_years`, `experience_max_years`: number|null
+- `compensation_disclosed`: boolean
+- `flag_count`: integer 0–50
+
+**Requirements**
+- `job_id`: JobId
+- `must_have`, `preferred`: `{text: string≤500, skills: SkillName[≤20]}`[≤100]
+- `responsibilities`: string≤1000[≤100]
+- `experience`: Experience
+- `location`: Location
+- `remote_mode`: RemoteMode
+- `employment_type`: EmploymentType
+- `compensation`: Compensation
+- `constraints`: `{kind: notice_period|shift|travel|relocation|work_authorization|certification|education|other, text: string≤500}`[≤50]
+- `discriminatory_flags`: `{text: string≤500, category: age|gender|religion|caste|marital_status|nationality_origin|disability|appearance|other}`[≤50]
+
+**Profile** (stored) = all ProfileInput fields (optional fields become `T|null`, and arrays default to `[]`) plus:
+- `profile_id`: ProfileId
+- `schema_version`: "1"
+- `created_at`, `updated_at`: date-time
+
+**MatchDimension**
+- `name`: must_have_skills|experience|preferred_skills|seniority|location_remote|employment_type|domain
+- `weight`: number 0–1
+- `score`: number 0–1|null (null when status is unknown)
+- `status`: matched|partial|missing|unknown
+- `evidence`, `gaps`: string≤500[≤20]
+
+**MatchResult**
+- `job_id`: JobId
+- `profile_ref`: ProfileId|"inline"
+- `scoring_version`: "fit-v1"
+- `fit_score`: number 0–1 (2dp)
+- `band`: strong|moderate|weak
+- `confidence`: number 0–1
+- `dimensions`: MatchDimension[7]
+- `blockers`: string≤500[≤20]
+- `disclaimer`: string (the fixed text in §7)
+
+**Architect ruling (review 1):** The stricter ProfileInput limits Codex chose in WP-SH-001 are accepted as normative:
+- names 200 chars
+- location preferences 50×200
+- remote/employment preferences 4/6
+- deal breakers 500 chars
+- skill years 0–60
+- years 1900–2100
+- money 0–1e9 with ISO-4217 currency
+
+§6A's UTC (`Z`) timestamps supersede the broader RFC 3339 wording in §3.

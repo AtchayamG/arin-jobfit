@@ -8,11 +8,11 @@ Rule: Codex and AGY never own the same file in the same period. A WP may only mo
 
 | WP | Agent | Tier | Phase | Depends on | Summary | Status |
 |---|---|---|---|---|---|---|
-| WP-SH-000 | Codex | LOW | P0 | — | git init, job-core package scaffold + toolchain | **READY** |
+| WP-SH-000 | Codex | LOW | P0 | — | git init, job-core package scaffold + toolchain | **PASS (review 1)** |
 | WP-SH-001 | Codex | STANDARD | P1 | SH-000 | zod contract schemas, envelope/error builders, JSON Schema export | READY after SH-000 |
-| WP-SH-002 | AGY | STANDARD | P1 | SH-000 | policy/capability gate engine, policy-lint, product policy.json files | READY after SH-000 |
-| WP-SH-003 | Codex | STANDARD | P1 | SH-001 | normalization, requirement/skill extraction, skills taxonomy v1, provider hints | planned |
-| WP-SH-004 | AGY | STANDARD | P1 | SH-001 | untrusted-text sanitizer, injection detector, URL validator, adversarial corpus | planned |
+| WP-SH-002 | AGY | STANDARD | P1 | SH-000 | policy/capability gate engine, policy-lint, product policy.json files | **PASS (review 1)** |
+| WP-SH-003 | Codex | STANDARD | P1 | SH-001 | normalization, requirement/skill extraction, skills taxonomy v1, provider hints | **READY** |
+| WP-SH-004 | AGY | STANDARD | P1 | SH-001 | untrusted-text sanitizer, injection detector, URL validator, adversarial corpus | **READY** |
 | WP-SH-005 | Codex | STANDARD | P1 | SH-003 | fit-v1 matching, explain, shortlist, dedupe | planned |
 | WP-SH-006 | AGY | STANDARD | P1 | SH-003 | CV-notes, interview, handoff builders + truthfulness invariant | planned |
 | WP-SH-007 | Codex | STANDARD | P1 | SH-001 | store interfaces, node:sqlite impl, migrations, retention, audit, export/purge | planned |
@@ -160,6 +160,148 @@ If AGY needs a new npm dependency or a package.json script, AGY STOPs and reques
 **Tests (100% branch coverage of src/policy):** every decision path; staleness boundary (exact day); unknown capability; duplicate IDs rejected; malformed JSON variants; lint pass/fail cases; both shipped policy files load and lint clean against the current Docs/09; the L4 hard-deny ignores config.
 
 **Acceptance:** run `npx vitest run tests/policy --coverage` (policy-scoped) and the full `npm run verify` green. Handover lists any adversarial observations about gate bypass.
+
+## 3B. Detailed specifications — Wave 2 (issued 2026-09-25 after review 1)
+
+### WP-SH-003 — Normalization + requirement extraction + skills taxonomy (Codex, STANDARD)
+
+**Owns:**
+- `shared/job-core/src/normalize/**`, `src/extract/**`
+- `shared/job-core/data/skills-taxonomy.v1.json`
+- `tests/normalize/**`, `tests/extract/**`, `tests/fixtures/jd/**`
+- `src/index.ts`, `src/schemas/envelope.ts` (R-1 only), `package.json`, `package-lock.json`, `tsup.config.ts`
+- `Docs/handovers/WP-SH-003.md`
+
+**Review-1 fixes, done first and committed separately as `WP-SH-003: review-1 fixes`:**
+
+- **R-1:** `envelopeSchema` gets a runtime refinement:
+  - `status === "error"` ⇔ `error !== null`
+  - `status === "error"` ⇒ `data === null`
+  - Add tests.
+- **R-2:** Replace every `"latest"` in devDependencies with the caret of the installed version:
+  - `@eslint/js ^10.0.1`, `@types/node ^26.6.2`, `@vitest/coverage-v8 ^5.0.1`, `eslint ^10.11.0`, `prettier ^3.9.9`, `tsup ^8.5.1`, `tsx ^4.23.15`, `typescript ^6.0.3`, `typescript-eslint ^8.70.1`, `vitest ^5.0.1`
+  - Set `zod` to `^4.6.5`.
+  - Run `npm install --ignore-scripts` to refresh the lockfile. `npm ci` must still pass.
+- **R-3:** Every handover's `COMMIT:` line must equal `git rev-parse --short HEAD` taken after the final commit. (Review 1 found mismatched hashes in the SH-000 and SH-002 handovers.)
+
+**Functional requirements:**
+
+1. `normalizeJob(input: JobInput, ctx) → {job: Job, warnings: Warning[]}`.
+   - `ctx` = `{provider, now: Date, jobId?: string, url: {value: string|null, isOfficial: boolean}, provenance: Provenance[]}`.
+   - The URL assessment is computed by the caller (the SH-004 validator). **normalize never fetches and never validates URLs itself.**
+   - Input text is assumed already sanitized (composition happens in SH-008).
+   - `job_id` = `job_${crypto.randomUUID()}` unless `ctx.jobId` is given.
+   - `retention_class` defaults to `standard_180d`.
+2. Fingerprint:
+   - Computed as `sha256:` + hex sha256 (`node:crypto`) of `NFKC-lowercase(title)|company|location_raw|whitespace-collapsed description`.
+   - Deterministic; unit-tested.
+3. Parsers. Each is linear-time and returns a value plus an optional `FIELD_UNPARSED` warning.
+   - **experience:**
+     - `5-8 years`, `5 - 10 Yrs`, `5+ years` (min 5, max null), `minimum 5 years`, `at least 3 yrs`
+     - `fresher` → 0–1
+     - Prefer `experience_text`, else scan the description.
+   - **compensation:**
+     - `₹ 12-18 Lacs P.A.` / `12-18 LPA` → INR 1,200,000–1,800,000 per year
+     - `1.2 Cr` → 12,000,000
+     - `Not Disclosed` → `disclosed: false`
+     - `₹30,000 - ₹45,000 a month`
+     - `$120,000 - $150,000 a year`
+     - `$25 an hour`
+     - Amounts are whole units; lakh = 1e5, crore = 1e7.
+   - **remote_mode:** remote / WFH / work from home → remote; hybrid → hybrid; work from office / on-site / onsite → onsite; else unknown.
+   - **employment_type:** `Full Time, Permanent` → full_time; contract; internship; part-time; temporary; else unknown.
+   - **location:**
+     - `raw` = input.
+     - `city` = first comma segment when it is not "Remote" or "Hybrid".
+     - `country` = `IN` if the raw text contains "India" or a city from a ≥ 40-entry Indian city list (including Chennai, Bengaluru/Bangalore, Mumbai, Pune, Hyderabad, Delhi/NCR, Noida, Gurugram/Gurgaon, Kolkata, Ahmedabad, Kochi, Coimbatore); explicit country names map to ISO-2; else null.
+   - **posted_at:** only absolute dates (ISO, `25 Sep 2026`, `25/09/2026` read as DD/MM for provider `naukri`). Relative text (`3 days ago`, `Just posted`) → `posted_at: null`, raw kept.
+4. `extractRequirements(job: Job) → Requirements`.
+   - **Section detection** (case-insensitive headings): Requirements, Qualifications, Must have, Mandatory, Key Skills, Desired Candidate Profile, Nice to have, Preferred, Good to have, Bonus, Responsibilities, Roles and Responsibilities, What you'll do, Job Description.
+   - Split into bullet or line items.
+   - **Classification:** must vs preferred by section, then by inline cues ("must", "required", "mandatory" vs "nice to have", "preferred", "plus", "good to have").
+   - **Skills:** taxonomy alias matching with symbol-safe boundaries (`C++`, `C#`, `.NET`, `Node.js`, `CI/CD`, `Go` as a whole word only).
+   - `required_skills` = union of must-have skills.
+   - `preferred_skills` = preferred minus required.
+   - Naukri "Key Skills" tag lists count as must-have.
+   - **constraints** (kinds per §6A): notice period / immediate joiner, shift, travel, relocation, work authorization, certification, education (B.E./B.Tech/MCA/MBA …).
+   - **discriminatory_flags:**
+     - Phrase patterns for age limits/ranges, gender-restricted hiring, religion, caste, marital status, nationality/"locals only", disability exclusion, appearance (complexion, height, "good looking").
+     - Each emits a flag **and** a `POTENTIALLY_DISCRIMINATORY_REQUIREMENT` warning.
+     - Flagged lines are excluded from must_have/preferred.
+     - Use ≥ 30 phrase tests, including negatives such as "equal opportunity employer regardless of gender" (must NOT flag).
+5. Also export `normalizeAndExtract` returning `{job` (with `required_skills`/`preferred_skills`/`responsibilities`/`qualifications` filled from the requirements), `requirements, warnings}`.
+6. Taxonomy `data/skills-taxonomy.v1.json`:
+   - `{version: "1", skills: [{name, aliases[], category}]}` with ≥ 300 skills.
+   - Categories: language, framework, frontend, backend, mobile, cloud, devops, data, ai_ml, testing, security, database, tool, domain (banking, payments, lending, insurance, healthcare, ecommerce, logistics, telecom), methodology.
+   - Tests: no alias maps to two names; names are unique; the file loads under the zod schema.
+   - Import via JSON import attributes so tsup bundles it; `dist` must work without `data/`.
+7. `provider-hints.ts` is the **only** file allowed to contain provider-specific idioms (Naukri: `Lacs P.A.`, `Yrs`, `Key Skills`, `Not Disclosed`; Indeed: `a year`/`a month`/`an hour`, `Job details`).
+
+**Tests:**
+- ≥ 6 synthetic but realistic JD fixtures (3 Naukri-style, 3 Indeed-style) written by you, **never copied or scraped from live portals**, with golden expected outputs.
+- A parser table for each parser.
+- Timing: every parser plus extraction on 50,000-char input < 50 ms (median of 5 runs).
+- Coverage thresholds as configured.
+
+**Acceptance:** `npm run verify` green; `npm ci` green; files ≤ 250 lines where practical; only owned files touched. Commits: `WP-SH-003: review-1 fixes` and `WP-SH-003: normalization and extraction`.
+
+### WP-SH-004 — Untrusted-text sanitizer, injection detector, URL validator, adversarial corpus (AGY, STANDARD)
+
+**Owns:**
+- `shared/job-core/src/sanitize/**`, `tests/sanitize/**`, `tests/fixtures/adversarial/**`
+- `src/policy/**` and `tests/policy/**` (fix R-4 only)
+- `Docs/handovers/WP-SH-004.md`
+
+**Review-1 fix, done first and committed separately as `WP-SH-004: review-1 fix`:**
+
+- **R-4 (timezone):** `loadPolicy` throws, and `evaluate` returns `POLICY_STALE`, when `snapshot_date` is later than the UTC date. For an India-based maintainer, a policy dated "today" in IST is "tomorrow" in UTC between 00:00 and 05:30 IST, so the server would refuse to start.
+  - Allow a tolerance of **+1 day** (snapshot ≤ UTC today + 1).
+  - Treat age −1 as 0.
+  - Anything further ahead still throws / fails closed.
+  - Tests: IST 00:30 on the snapshot date; +1 day accepted; +2 days rejected.
+- R-3 applies as well: the `COMMIT:` line must equal `git rev-parse --short HEAD`.
+
+**Functional requirements:**
+
+1. `sanitizeText(input: string, {field, maxLength}) → {ok: true, text, changed, warnings} | {ok: false, code: "INPUT_TOO_LARGE", field}`. In order:
+   1. Length check on the raw input. Never silently truncate.
+   2. NFKC.
+   3. Remove C0/C1 controls except `
+` and `	`.
+   4. Remove zero-width characters (U+200B–U+200D, U+2060, U+FEFF), bidi controls (U+202A–U+202E, U+2066–U+2069) and Unicode tag characters (U+E0000–U+E007F, "ASCII smuggling").
+   5. HTML → text with no DOM dependency: drop `<script>`, `<style>`, `<noscript>` and `<!-- -->` contents; strip tags; `<br>`, `<p>` and `<li>` become newlines; decode named and numeric entities (numeric entities that decode to removed characters are removed too).
+   6. Normalize CRLF.
+   7. Collapse 3+ blank lines to 2.
+   8. Trim.
+   - `changed: true` ⇒ `CONTENT_SANITIZED` warning with `field`.
+2. `detectInjection(text) → {suspected: boolean, signals: string[]}` with ≥ 25 signal patterns, including:
+   - override phrases ("ignore/disregard/forget previous|prior|above instructions")
+   - role hijack ("you are now", "act as", "system prompt", "developer mode")
+   - tool-steering ("call/use/invoke the … tool", "send an email", "forward", "upload", "delete all")
+   - chat-template tokens (`<|im_start|>`, `[INST]`, `### system`, `assistant:`)
+   - markdown image or link exfiltration with query strings
+   - long base64 blobs (≥ 200 chars)
+   - a few Hindi/Tamil override phrases
+   - `suspected` ⇒ `PROMPT_INJECTION_SUSPECTED` warning.
+   - Detection is advisory. It never blocks ingestion.
+3. `validateSourceUrl(raw, allowlist: string[]) → {ok: true, url: string, isOfficial: boolean} | {ok: false, code: "UNSAFE_URL", reason}`:
+   - WHATWG `URL` parsing; https only; no userinfo; no explicit port other than 443.
+   - Hostname is not an IPv4/IPv6 literal (including decimal/octal/hex forms that `URL` normalizes), not `localhost`, not `*.local`/`*.internal`/`*.localhost`.
+   - Length ≤ 2,048.
+   - `isOfficial` iff the hostname equals, or is a subdomain of, an allowlist entry (exact label match, so `naukri.com.evil.io` and `evilnaukri.com` are false).
+   - Punycode/IDN hosts are never official unless listed.
+   - **Never fetch.**
+   - Default allowlists are exported: `NAUKRI_HOSTS = ["naukri.com"]`, `INDEED_HOSTS = ["indeed.com", "indeed.co.in"]`.
+4. Adversarial corpus `tests/fixtures/adversarial/corpus.v1.json`:
+   - ≥ 40 cases `{id, category, input, expect}`.
+   - Categories: injection-direct, injection-multilingual, unicode-smuggling, bidi, zero-width, html-script, markdown-exfil, oversize, redos-candidate, ssrf-url, idn-homograph, discriminatory-phrase (the last is data for SH-003/SEC-001).
+   - All cases are driven by a table test.
+5. Performance: `sanitizeText` + `detectInjection` on a 50,000-char hostile input < 50 ms (median of 5). Regexes have no nested quantifiers; add a ReDoS test using known pathological strings.
+6. `src/sanitize/index.ts` exports everything. Do **not** edit `src/index.ts`; Codex wires the barrel in SH-008.
+
+**Tests:** 100% branch coverage of `src/sanitize`; the corpus table; URL cases (including `http:`, `file:`, `javascript:`, `127.0.0.1`, `[::1]`, `169.254.169.254`, `2130706433`, `0x7f.1`, `user@naukri.com`, `naukri.com:8443`, Cyrillic homograph).
+
+**Acceptance:** scoped tests and `npm run verify` green. Commits: `WP-SH-004: review-1 fix` and `WP-SH-004: sanitizer, injection detector, url validator`.
 
 ## 4. Handover format (mandatory for every WP)
 
