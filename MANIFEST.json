@@ -1,0 +1,134 @@
+{
+  ".gitignore": {
+    "sha256": "bd7a6d161b932d5906e64b072e37d873ed299c0cd3d4512c9b8eb42cfedb6090",
+    "bytes": 359
+  },
+  "AGENTS.md": {
+    "sha256": "0a1d853b660200334cd23b2ac4d93988f5311df015eb53e278e1771757c03b48",
+    "bytes": 2808
+  },
+  "Docs/00_PROJECT_CHARTER.md": {
+    "sha256": "bcefbe34aa24cace63d4a0b4229a01695f3471c5792e5e21c20921ceb2faa1d4",
+    "bytes": 1553
+  },
+  "Docs/01_RESEARCH_AND_EXECUTION_PLAN_v1.md": {
+    "sha256": "233359e0fa437d9c2d26f94d9f28044222d567e0ac8345d96c72779c3a536a08",
+    "bytes": 5201
+  },
+  "Docs/02_NAUKRI_MCP_MASTER_BLUEPRINT_v1.md": {
+    "sha256": "77c47c553c08cf82238ba916510e28b9f9d59b4f0356a959dcc54b0b9b171af9",
+    "bytes": 3250
+  },
+  "Docs/03_INDEED_MCP_MASTER_BLUEPRINT_v1.md": {
+    "sha256": "165dbd61b090e468e7e3976e4f2d94e2397294b2fade56ee07b6b2aa368e29fa",
+    "bytes": 3415
+  },
+  "Docs/04_SHARED_MCP_CONTRACT_v1.md": {
+    "sha256": "33dd9fc59fa542cd0937a7cf03771ebe39d676c03c359ed0cd6e96bcba7232c0",
+    "bytes": 2501
+  },
+  "Docs/05_SECURITY_PRIVACY_COMPLIANCE_v1.md": {
+    "sha256": "3f663b5df7817b439284ddd450f82c2fc750a0b2cf41d45b2f7e23fe5398ae5a",
+    "bytes": 1608
+  },
+  "Docs/06_CLEAN_FOLDER_POLICY_v1.md": {
+    "sha256": "8ef8409763009ef1e752aa3b42a669d1ca0920aa3204274759e89dea330a0bfb",
+    "bytes": 2020
+  },
+  "Docs/07_TESTING_RELEASE_GATES_v1.md": {
+    "sha256": "4e373f28a7329fdc817d81c24f897fc3db28499bb058a027e60042ceed0cedb5",
+    "bytes": 1409
+  },
+  "Docs/08_COMMERCIALIZATION_PARTNER_PLAN_v1.md": {
+    "sha256": "36b9066717bb95a6849aec7cb73140dbf614675eaf63a44478c9234cace45f37",
+    "bytes": 1717
+  },
+  "Docs/09_DECISIONS_LOG.md": {
+    "sha256": "700eeafff0e7fffd46a97781be8034b813aa8d811728dac3751ad70b63cd5ddf",
+    "bytes": 2589
+  },
+  "Docs/10_TASK_STATUS.md": {
+    "sha256": "ce9f1d25770340d94cd17bf239f835e66fb611bd1ae81945d4043614d4ff642a",
+    "bytes": 1212
+  },
+  "Docs/11_HANDOVER.md": {
+    "sha256": "cc24366497b3bb5557f692cbad18fd16075e4387d33a0f94574dcc563295973c",
+    "bytes": 1304
+  },
+  "Docs/12_RESEARCH_SOURCES.md": {
+    "sha256": "1b033db5b0e082422bd2e88a50bf3cdbe0cd904837ba9cc1edd779b55d3fa19c",
+    "bytes": 2039
+  },
+  "Docs/13_PARTNER_OUTREACH_LOG.md": {
+    "sha256": "cf9cef3a0f124e1da8ba963318b71ffd9e41fb1a978895912ad3957e81e5ac51",
+    "bytes": 1095
+  },
+  "Docs/14_ARCHITECT_AUDIT_v1.md": {
+    "sha256": "51995af81f0dae6ff64fe612dea5cb5ef447f1d27fb0b3fa4254cf92dafc48ba",
+    "bytes": 16085
+  },
+  "Docs/15_IMPLEMENTATION_PLAN_v1.md": {
+    "sha256": "21d2086ed46f8913aaff29cd58242d43bc33c996392b53b091ea7757abc8105e",
+    "bytes": 8691
+  },
+  "Docs/16_WORK_PACKAGE_ASSIGNMENTS_v1.md": {
+    "sha256": "0c5870dd9d4bd6c9f2e79dacb8d5b4ff19899d919ff6a1b2f0a2fb1345d00d8e",
+    "bytes": 13204
+  },
+  "Docs/17_MCP_TOOL_SCHEMA_PLAN_v1.md": {
+    "sha256": "df15d347fff70ea77a8cc9ecfb4253e0767cf156d40cf547e464c2b823ef5518",
+    "bytes": 10980
+  },
+  "Docs/18_THREAT_MODEL_v1.md": {
+    "sha256": "7b07dbd2061a9e2eb487b6dd08d7ef06dcb1611dd32cd089225a2c31c965111e",
+    "bytes": 8113
+  },
+  "Docs/19_IMPLEMENTATION_CHANGELOG.md": {
+    "sha256": "f98384dd4b7a2b890a3225d68d607ac7db31548bd5313671c4b1346714dd1f67",
+    "bytes": 452
+  },
+  "Docs/handovers/README.md": {
+    "sha256": "fa8974088181969c19a0a8d978bf295a72fc7a87174f1048aaaf951a345e19f4",
+    "bytes": 195
+  },
+  "Prompts/AGY_INITIAL_SENIOR_DEVELOPER_PROMPT_v1.md": {
+    "sha256": "6b2f6ca10d81d94f601664a2ea0119e487dc3b2c79d398b7cbe034ee2cec6cec",
+    "bytes": 1237
+  },
+  "Prompts/CLAUDE_INITIAL_ARCHITECT_PROMPT_v1.md": {
+    "sha256": "a9a51c5f0cfac0dca5d8b99de93061a4d477ec603b1b59fafd08e60f43456f0d",
+    "bytes": 2518
+  },
+  "Prompts/CODEX_INITIAL_SENIOR_DEVELOPER_PROMPT_v1.md": {
+    "sha256": "f2a959eec27c27e688ae4924b414121d93630ba1048598a1f5c9a54eff130a0b",
+    "bytes": 1765
+  },
+  "README.md": {
+    "sha256": "7b4cbf610ee12bf1b44eace2b6d165d2219996109a2218502dd146a6c68bbba2",
+    "bytes": 1601
+  },
+  "indeed-mcp/README.md": {
+    "sha256": "051f04b114c2480774ab77ddf83394e9babacd6901ad4c528ebde0234d9270ee",
+    "bytes": 329
+  },
+  "indeed-mcp/docs/README.md": {
+    "sha256": "a7a51c11818b83952469161174a1360d75bd672de01b6efee449fafd6826db41",
+    "bytes": 171
+  },
+  "naukri-mcp/README.md": {
+    "sha256": "ac9dd63824e277602fd2ce8a84365a826b8a9951e3946a9669efcc275fca87c0",
+    "bytes": 346
+  },
+  "naukri-mcp/docs/README.md": {
+    "sha256": "f4f36441131fca7ad04d05e12cf282f42536aad0b1988b41e1e2027fc00c18f8",
+    "bytes": 171
+  },
+  "shared/contracts/README.md": {
+    "sha256": "fff25b8808508a8fda710b256185df6e05d8ed006d69d3bef9924a51b80a3d6c",
+    "bytes": 199
+  },
+  "shared/schemas/README.md": {
+    "sha256": "2ac1d994191b31e248a837489b20756fbfc94b450fb60a75dbe79ce100026ea9",
+    "bytes": 181
+  }
+}
