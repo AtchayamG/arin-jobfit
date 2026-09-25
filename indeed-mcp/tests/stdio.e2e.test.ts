@@ -1,7 +1,8 @@
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import { Client } from "@modelcontextprotocol/client";
 import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -177,11 +178,28 @@ describe("indeed-mcp stdio E2E suite", () => {
     expect(fs.existsSync(dbFile)).toBe(true);
   });
 
+  it("suppresses SQLite ExperimentalWarning deterministically while forwarding other warnings", () => {
+    const mod = pathToFileURL(path.resolve(import.meta.dirname, "../src/warnings.ts")).href;
+    const script = `
+      import { installWarningFilter } from "${mod}";
+      installWarningFilter();
+      process.emitWarning("SQLite is an experimental feature", "ExperimentalWarning");
+      process.emitWarning("Arbitrary other warning", "DeprecationWarning");
+    `;
+    const res = spawnSync(
+      process.execPath,
+      ["--import", "tsx", "--input-type=module", "-e", script],
+      { encoding: "utf-8" },
+    );
+    expect(res.status).toBe(0);
+    expect(res.stderr).not.toContain("ExperimentalWarning");
+    expect(res.stderr).not.toContain("SQLite is an experimental feature");
+    expect(res.stderr).toContain("DeprecationWarning: Arbitrary other warning");
+  });
+
   describe("CLI arguments and standalone bundle", () => {
     it("prints package version on --version", () => {
-      const output = execFileSync("node", [distPath, "--version"], {
-        encoding: "utf-8",
-      }).trim();
+      const output = execFileSync("node", [distPath, "--version"], { encoding: "utf-8" }).trim();
       expect(output).toBe("0.1.0");
     });
 

@@ -1,16 +1,10 @@
 import os from "node:os";
 import policyJson from "../config/policy.json" with { type: "json" };
+import { installWarningFilter } from "./warnings.js";
+
+export { installWarningFilter };
 
 const PACKAGE_VERSION: string = process.env.PACKAGE_VERSION ?? "0.1.0";
-
-function installWarningFilter(): void {
-  process.on("warning", (warning: Error) => {
-    if (warning.name === "ExperimentalWarning" && /sqlite/i.test(warning.message)) {
-      return;
-    }
-    process.stderr.write(`${warning.name}: ${warning.message}\n`);
-  });
-}
 
 function handleCliArgs(): void {
   const args = process.argv.slice(2);

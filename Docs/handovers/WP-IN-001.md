@@ -17,3 +17,13 @@ BLUEPRINT DEVIATIONS: none
 REMAINING RISKS: Client compatibility variations across MCP client implementations (to be verified in WP-CMP-001).
 RECOMMENDED NEXT STEP: WP-QA-001 (Codex) / WP-SEC-001 (AGY).
 COMMIT: 78243dd WP-IN-001: indeed-mcp product over stdio
+
+## R-1 Fix (R-12)
+WORK PACKAGE: WP-IN-001-R1
+STATUS: DONE
+FILES MODIFIED: indeed-mcp/src/index.ts, indeed-mcp/src/warnings.ts, indeed-mcp/tests/stdio.e2e.test.ts, Docs/handovers/WP-IN-001.md
+IMPLEMENTATION SUMMARY: Added process.removeAllListeners("warning") at start of installWarningFilter in src/warnings.ts. Forwarded non-SQLite warnings to stderr.
+TESTS ADDED: Deterministic warning filter test in tests/stdio.e2e.test.ts verifying suppression of SQLite ExperimentalWarning and passthrough of DeprecationWarning.
+TEST RESULTS: 15/15 passed in indeed-mcp on Node v24.18.0. npm run verify 100% green.
+COMMIT: 91ff2ed WP-IN-001: R-12 warning filter fix
+
