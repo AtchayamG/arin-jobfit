@@ -4,6 +4,13 @@
 
 import type { Profile } from "../schemas/profile.js";
 
+/**
+ * Rounds a number to 2 decimal places using half-up rounding.
+ */
+export function round2dp(val: number): number {
+  return Number((Math.round((val + Number.EPSILON) * 100) / 100).toFixed(2));
+}
+
 const REGEX_ESCAPE = /[.*+?^${}()|[\]\\]/g;
 
 export function escapeRegex(text: string): string {

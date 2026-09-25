@@ -191,4 +191,27 @@ describe("computeFit", () => {
     const { result } = computeFit(job, req, inlineProfile);
     expect(result.profile_ref).toBe("inline");
   });
+
+  it("rounds every dimension score, fit_score, and confidence to 2 decimal places (half-up)", () => {
+    const job = createTestJob({ required_skills: ["SkillA", "SkillB", "SkillC"] });
+    const req = createTestRequirements({
+      must_have: [{ text: "Core", skills: ["SkillA", "SkillB", "SkillC"] }],
+    });
+    const profile = createTestProfile({
+      skills: [{ name: "SkillA", years: 2, level: "intermediate" }],
+      roles: [],
+    });
+
+    const { result } = computeFit(job, req, profile);
+    const mustHaveDim = result.dimensions.find((d) => d.name === "must_have_skills");
+    expect(mustHaveDim?.score).toBe(0.33);
+
+    for (const d of result.dimensions) {
+      if (d.score !== null) {
+        expect(Number(d.score.toFixed(2))).toBe(d.score);
+      }
+    }
+    expect(Number(result.fit_score.toFixed(2))).toBe(result.fit_score);
+    expect(Number(result.confidence.toFixed(2))).toBe(result.confidence);
+  });
 });

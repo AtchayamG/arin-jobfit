@@ -205,28 +205,25 @@ describe("WP-QA-002: Automated real-world scenario suite (24 JD×Profile pairs)"
 });
 
 describe("DEFECTS discovered by automated real-world scenarios", () => {
-  it.fails(
-    "DEFECT-001: Indian numbering comma format '₹16,00,000 - ₹24,00,000' parses min=16 instead of 1600000",
-    () => {
-      // Input: compensation_text with Indian comma grouping (lakhs 2-digit comma grouping: 16,00,000)
-      // Expected: min=1600000, max=2400000
-      // Actual: min=16, max=24 because amountPattern assumes western 3-digit comma grouping (\d{1,3}(?:,\d{3})*)
-      const { job } = normalizeAndExtract(
-        {
-          title: "Backend Engineer - Java & Cloud",
-          description: "Requirements: Java, Spring Boot. Full time.",
-          compensation_text: "₹16,00,000 - ₹24,00,000 a year",
-          origin: "user_paste",
-        },
-        {
-          provider: "indeed",
-          now: new Date("2026-09-25T12:00:00Z"),
-          url: { value: null, isOfficial: false },
-          provenance: [],
-        },
-      );
-      expect(job.compensation.min).toBe(1600000);
-      expect(job.compensation.max).toBe(2400000);
-    },
-  );
+  it("DEFECT-001: Indian numbering comma format '₹16,00,000 - ₹24,00,000' parses min=16 instead of 1600000", () => {
+    // Input: compensation_text with Indian comma grouping (lakhs 2-digit comma grouping: 16,00,000)
+    // Expected: min=1600000, max=2400000
+    // Actual: min=16, max=24 because amountPattern assumes western 3-digit comma grouping (\d{1,3}(?:,\d{3})*)
+    const { job } = normalizeAndExtract(
+      {
+        title: "Backend Engineer - Java & Cloud",
+        description: "Requirements: Java, Spring Boot. Full time.",
+        compensation_text: "₹16,00,000 - ₹24,00,000 a year",
+        origin: "user_paste",
+      },
+      {
+        provider: "indeed",
+        now: new Date("2026-09-25T12:00:00Z"),
+        url: { value: null, isOfficial: false },
+        provenance: [],
+      },
+    );
+    expect(job.compensation.min).toBe(1600000);
+    expect(job.compensation.max).toBe(2400000);
+  });
 });

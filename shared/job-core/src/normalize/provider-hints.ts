@@ -14,6 +14,8 @@ export function canonicalCompensationText(provider: ProviderId, text: string): s
     .replace(/\blpa\b/gi, "lakh per year")
     .replace(/\bcr\b/gi, "crore")
     .replace(/\bnot disclosed\b/gi, "undisclosed")
+    .replace(/\bper\s*annum\b/gi, "per year")
+    .replace(/(?:\bp\.?\s*a\.?(?!\w)|\bpa\b)/gi, "per year")
     .replace(/\ba year\b/gi, "per year")
     .replace(/\ba month\b/gi, "per month")
     .replace(/\ban hour\b/gi, "per hour");

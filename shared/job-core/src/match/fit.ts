@@ -5,9 +5,9 @@
 import type { Job, Requirements } from "../schemas/job.js";
 import type { Profile } from "../schemas/profile.js";
 import type { Warning } from "../schemas/common.js";
-import { matchResultSchema, type MatchResult } from "../schemas/match.js";
+import { matchResultSchema, type MatchResult, type MatchDimension } from "../schemas/match.js";
 import type { ComputeFitOptions, ComputeFitOutput } from "./types.js";
-import { buildWordBoundaryRegex } from "./matcher.js";
+import { buildWordBoundaryRegex, round2dp } from "./matcher.js";
 import {
   calculateMustHaveSkills,
   calculateExperience,
@@ -41,7 +41,7 @@ export function computeFit(
   const dEmploymentType = calculateEmploymentType(job, profile);
   const dDomain = calculateDomain(job, requirements, profile, options?.skillCategory);
 
-  const dimensions = [
+  const rawDimensions = [
     dMustHave,
     dExperience,
     dPreferred,
@@ -50,6 +50,11 @@ export function computeFit(
     dEmploymentType,
     dDomain,
   ];
+
+  const dimensions: MatchDimension[] = rawDimensions.map((d) => ({
+    ...d,
+    score: d.score !== null ? round2dp(d.score) : null,
+  }));
 
   // 2. Evaluate deal-breaker phrases
   const blockers: string[] = [];
@@ -76,7 +81,7 @@ export function computeFit(
   // 3. Aggregate known dimensions and re-normalize
   const known = dimensions.filter((d) => d.status !== "unknown" && d.score !== null);
   const rawConfidence = known.reduce((sum, d) => sum + d.weight, 0);
-  const confidence = Number((Math.round(rawConfidence * 100) / 100).toFixed(2));
+  const confidence = round2dp(rawConfidence);
 
   let rawScore = 0;
   if (known.length > 0 && confidence > 0) {
@@ -87,12 +92,12 @@ export function computeFit(
     rawScore = weightedSum / confidence;
   }
 
-  let fitScore = Number((Math.round(rawScore * 100) / 100).toFixed(2));
+  let fitScore = round2dp(rawScore);
 
   // Deal-breaker caps score at 0.30
   if (blockers.length > 0) {
     fitScore = Math.min(fitScore, 0.3);
-    fitScore = Number((Math.round(fitScore * 100) / 100).toFixed(2));
+    fitScore = round2dp(fitScore);
   }
 
   const band = fitScore >= 0.75 ? "strong" : fitScore >= 0.5 ? "moderate" : "weak";

@@ -6,6 +6,7 @@
 import type { Job, Requirements } from "../schemas/job.js";
 import type { Profile } from "../schemas/profile.js";
 import type { MatchDimension } from "../schemas/match.js";
+import { round2dp } from "./matcher.js";
 
 const SENIORITY_LEVELS: { level: number; regex: RegExp }[] = [
   { level: 5, regex: /\b(head|director|vp)\b/i },
@@ -38,12 +39,12 @@ export function calculateExperience(
   const y = profile.total_experience_years;
   let score: number;
   if (min !== null && y < min) {
-    score = Math.max(0, 1 - (min - y) / Math.max(min, 1));
+    score = round2dp(Math.max(0, 1 - (min - y) / Math.max(min, 1)));
   } else if (max !== null && y > max) {
     if (y - max <= 2) {
       score = 1;
     } else {
-      score = Math.max(0.5, 1 - (y - max - 2) * 0.1);
+      score = round2dp(Math.max(0.5, 1 - (y - max - 2) * 0.1));
     }
   } else {
     score = 1;
@@ -108,7 +109,7 @@ export function calculateSeniority(job: Job, profile: Profile): MatchDimension {
   else if (y < 15) profileLevel = 4;
 
   const diff = Math.abs(profileLevel - jobLevel);
-  const score = Math.max(0, 1 - 0.34 * diff);
+  const score = round2dp(Math.max(0, 1 - 0.34 * diff));
   const status = score === 1 ? "matched" : score > 0 ? "partial" : "missing";
 
   const evidence: string[] = [];

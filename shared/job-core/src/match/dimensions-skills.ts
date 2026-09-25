@@ -6,7 +6,7 @@
 import type { Job, Requirements } from "../schemas/job.js";
 import type { Profile } from "../schemas/profile.js";
 import type { MatchDimension } from "../schemas/match.js";
-import { profileHasSkill } from "./matcher.js";
+import { profileHasSkill, round2dp } from "./matcher.js";
 
 export function calculateMustHaveSkills(
   job: Job,
@@ -29,7 +29,7 @@ export function calculateMustHaveSkills(
 
   const covered = skills.filter((s) => profileHasSkill(profile, s));
   const missing = skills.filter((s) => !profileHasSkill(profile, s));
-  const score = covered.length / skills.length;
+  const score = round2dp(covered.length / skills.length);
   const status = score === 1 ? "matched" : score > 0 ? "partial" : "missing";
 
   return {
@@ -63,7 +63,7 @@ export function calculatePreferredSkills(
 
   const covered = skills.filter((s) => profileHasSkill(profile, s));
   const missing = skills.filter((s) => !profileHasSkill(profile, s));
-  const score = covered.length / skills.length;
+  const score = round2dp(covered.length / skills.length);
   const status = score === 1 ? "matched" : score > 0 ? "partial" : "missing";
 
   return {
@@ -117,7 +117,7 @@ export function calculateDomain(
 
   const covered = domainSkills.filter((s) => profileHasSkill(profile, s));
   const missing = domainSkills.filter((s) => !profileHasSkill(profile, s));
-  const score = covered.length / domainSkills.length;
+  const score = round2dp(covered.length / domainSkills.length);
   const status = score === 1 ? "matched" : score > 0 ? "partial" : "missing";
 
   return {

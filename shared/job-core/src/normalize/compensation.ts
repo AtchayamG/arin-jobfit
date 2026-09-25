@@ -11,11 +11,26 @@ const unknown = (raw: string | null): Compensation => ({
   disclosed: false,
 });
 
+function hasInvalidCommaGrouping(text: string): boolean {
+  const matches = text.matchAll(/\b\d[\d,]*\d\b/g);
+  for (const m of matches) {
+    const s = m[0];
+    if (s.includes(",")) {
+      const isWestern = /^\d{1,3}(?:,\d{3})+$/.test(s);
+      const isIndian = /^\d{1,3}(?:,\d{2})+,\d{3}$/.test(s);
+      if (!isWestern && !isIndian) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 const amountPattern =
-  /([₹$€£])?\s*(\d{1,3}(?:,\d{3})*|\d{1,9})(?:\.(\d{1,2}))?\s*(lakhs?|lacs?|lpa|crores?|cr|l\b)?/i;
+  /([₹$€£]|INR|USD|EUR|GBP)?\s*(\d{1,3}(?:,\d{2})+,\d{3}|\d{1,3}(?:,\d{3})+|\d{1,9})(?:\.(\d{1,2}))?\s*(lakhs?|lacs?|lpa|crores?|cr|l\b)?/i;
 
 export const compensationFragmentPattern =
-  /(?:(?:salary|compensation|pay|ctc)\s*[:\-–—]?\s*)?[₹$€£]?\s*\d+(?:\.\d+)?\s*(?:lpa|lakhs?|lacs?|crores?|cr|l\b)?\s*(?:[-–—]|to)\s*[₹$€£]?\s*\d+(?:\.\d+)?\s*(?:lpa|lakhs?|lacs?|crores?|cr|l\b|per\s*annum|p\.a\.|per\s*year|a\s*year|per\s*month|per\s*hour)?(?:\s*ctc)?|(?:(?:salary|compensation|pay|ctc)\s*[:\-–—]?\s*)?[₹$€£]?\s*\d+(?:\.\d+)?\s*(?:lpa|lakhs?|lacs?|crores?|cr|l\b|per\s*annum|p\.a\.|per\s*year|a\s*year|per\s*month|per\s*hour)(?:\s*ctc)?/i;
+  /(?:(?:salary|compensation|pay|ctc)\s*[:\-–—]?\s*)?(?:[₹$€£]|INR|USD|EUR|GBP)?\s*(?:\d{1,3}(?:,\d{2})+,\d{3}|\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?\s*(?:lpa|lakhs?|lacs?|crores?|cr|l\b)?\s*(?:[-–—]|to)\s*(?:[₹$€£]|INR|USD|EUR|GBP)?\s*(?:\d{1,3}(?:,\d{2})+,\d{3}|\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?\s*(?:lpa|lakhs?|lacs?|crores?|cr|l\b|per\s*annum|p\.a\.|per\s*year|a\s*year|per\s*month|per\s*hour)?(?:\s*ctc)?|(?:(?:salary|compensation|pay|ctc)\s*[:\-–—]?\s*)?(?:[₹$€£]|INR|USD|EUR|GBP)?\s*(?:\d{1,3}(?:,\d{2})+,\d{3}|\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?\s*(?:lpa|lakhs?|lacs?|crores?|cr|l\b|per\s*annum|p\.a\.|per\s*year|a\s*year|per\s*month|per\s*hour)(?:\s*ctc)?/i;
 
 export function extractCompensationFragment(text: string): string | undefined {
   const match = compensationFragmentPattern.exec(text);
@@ -42,14 +57,15 @@ function amount(
   const multiplier = isLakh ? 1e5 : isCrore ? 1e7 : 1;
   const result = Math.round(numeric * multiplier);
   if (!Number.isFinite(result) || result > 1e9) return null;
+  const rawCurr = match[1]?.toUpperCase();
   const currency =
-    match[1] === "₹"
+    rawCurr === "₹" || rawCurr === "INR"
       ? "INR"
-      : match[1] === "$"
+      : rawCurr === "$" || rawCurr === "USD"
         ? "USD"
-        : match[1] === "€"
+        : rawCurr === "€" || rawCurr === "EUR"
           ? "EUR"
-          : match[1] === "£"
+          : rawCurr === "£" || rawCurr === "GBP"
             ? "GBP"
             : null;
   return {
@@ -66,6 +82,16 @@ export function parseCompensation(
   if (!text?.trim()) return { value: unknown(null) };
   const rawClean = text.trim();
   const unlabelled = rawClean.replace(/^(?:salary|compensation|pay|ctc)\s*[:\-–—]?\s*/i, "");
+  if (hasInvalidCommaGrouping(unlabelled)) {
+    return {
+      value: unknown(rawClean.slice(0, 200)),
+      warning: {
+        code: "FIELD_UNPARSED",
+        message: "Compensation could not be parsed",
+        field: "compensation",
+      },
+    };
+  }
   const canonical = canonicalCompensationText(provider, unlabelled);
   if (/\bundisclosed\b/i.test(canonical)) return { value: unknown(rawClean.slice(0, 200)) };
 
@@ -73,8 +99,13 @@ export function parseCompensation(
   const first = amount(dash ? canonical.slice(0, dash.index) : canonical);
   const second = dash ? amount(canonical.slice(dash.index + dash[0].length)) : null;
 
+  const hasIndianGrouping = /\b\d{1,3}(?:,\d{2})+,\d{3}\b/.test(rawClean);
+
   const isIndianContext =
+    provider === "naukri" ||
+    hasIndianGrouping ||
     /\b(?:lakh|lac|crore|lpa|ctc|inr)\b/i.test(canonical) ||
+    /\b(?:p\.?a\.?|per\s*annum)\b/i.test(rawClean) ||
     /[₹]/.test(rawClean) ||
     /\b(?:lpa|ctc)\b/i.test(rawClean);
 
@@ -94,7 +125,7 @@ export function parseCompensation(
           ? "year"
           : "unknown";
 
-  if (first && currency && (!dash || second)) {
+  if (first && (!dash || second)) {
     const firstUnit = first.unit ?? second?.unit;
     const secondUnit = second?.unit ?? first.unit;
     const adjustedFirst = first.unit
