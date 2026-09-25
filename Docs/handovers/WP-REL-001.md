@@ -30,7 +30,7 @@ Packages: `arin-jobfit-nk@0.1.0`, `arin-jobfit-id@0.1.0`.
 
 ## OWNER ACTIONS REQUIRED
 
-Replace `<OWNER>` in repository URLs with the GitHub owner name. Create/configure
+The GitHub owner is `AtchayamG`. Create/configure
 the GitHub repository, enable Security Advisories and branch protection, then
 run `npm login` and publish each package from its product directory after final
 review (`npm publish`).

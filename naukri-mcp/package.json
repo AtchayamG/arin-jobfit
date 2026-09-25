@@ -17,7 +17,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/<OWNER>/arin-jobfit"
+    "url": "https://github.com/AtchayamG/arin-jobfit"
+  },
+  "homepage": "https://github.com/AtchayamG/arin-jobfit#readme",
+  "bugs": {
+    "url": "https://github.com/AtchayamG/arin-jobfit/issues"
   },
   "keywords": [
     "mcp",

@@ -9,7 +9,7 @@
 ## Reporting a vulnerability
 
 Please report security vulnerabilities privately through [GitHub Security
-Advisories](https://github.com/<OWNER>/arin-jobfit/security/advisories/new).
+Advisories](https://github.com/AtchayamG/arin-jobfit/security/advisories/new).
 Do not open a public issue with exploitable details. The repository owner will
 acknowledge and coordinate a fix there.
 
