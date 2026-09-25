@@ -82,7 +82,7 @@ function decodeHtmlEntities(html: string): string {
   return decoded;
 }
 
-function stripHtml(input: string): string {
+function stripHtmlTags(input: string): string {
   // Drop script, style, noscript, and comments with their contents
   let text = input.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "");
   text = text.replace(/<script\b[\s\S]*$/gi, "");
@@ -98,12 +98,32 @@ function stripHtml(input: string): string {
   text = text.replace(/<\/(?:p|div|tr|h[1-6])>/gi, "\n\n");
   text = text.replace(/<li\b[^>]*>/gi, "\n");
 
-  // Strip all remaining tags
-  text = text.replace(/<[^>]+>/g, "");
-  text = text.replace(/<[^>]*$/g, "");
+  // Strip all remaining HTML tags (opening, closing, doctype, processing instructions)
+  // Preserves lone '<' and '>' not forming HTML tags (e.g. 'salary < 10 LPA', '5 > 3')
+  text = text.replace(/<\/?(?:[a-zA-Z]|!|\?)[^>]*>/g, "");
+  text = text.replace(/<\/?(?:[a-zA-Z]|!|\?)[^>]*$/g, "");
 
-  // Decode named and numeric entities
-  text = decodeHtmlEntities(text);
+  return text;
+}
+
+function sanitizeHtmlAndEntities(input: string): string {
+  let text = input;
+
+  // Bounded multi-pass loop (max 3 passes) to strip tags and decode entities,
+  // preventing entity-decoded markup attacks and double-encoding bypasses (R-5).
+  for (let pass = 0; pass < 3; pass++) {
+    const prev = text;
+    text = stripHtmlTags(text);
+    text = decodeHtmlEntities(text);
+    text = stripForbiddenUnicode(text);
+    if (text === prev) {
+      break;
+    }
+  }
+
+  // Final cleanup pass: strip any tags or invisible chars revealed by the last decode
+  text = stripHtmlTags(text);
+  text = stripForbiddenUnicode(text);
 
   return text;
 }
@@ -143,11 +163,8 @@ export function sanitizeText(input: string, options?: SanitizeOptions): Sanitize
   // 3 & 4. Remove C0/C1 controls (except \n, \t, \r), zero-width, bidi, tags
   text = stripForbiddenUnicode(text);
 
-  // 5. HTML -> text
-  text = stripHtml(text);
-
-  // Re-run forbidden character strip in case entities decoded to them
-  text = stripForbiddenUnicode(text);
+  // 5. HTML -> text (multi-pass bounded loop for entity-decoded markup)
+  text = sanitizeHtmlAndEntities(text);
 
   // 6. Normalize CRLF
   text = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n");

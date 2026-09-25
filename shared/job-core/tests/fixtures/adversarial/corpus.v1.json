@@ -278,6 +278,46 @@
     }
   },
   {
+    "id": "ADV-HTM-006",
+    "category": "html-script",
+    "description": "Entity-encoded script tag with inner payload stripped",
+    "input": "&lt;script&gt;alert(1)&lt;/script&gt;Principal Architect",
+    "expect": {
+      "sanitizedChanged": true,
+      "expectedText": "Principal Architect"
+    }
+  },
+  {
+    "id": "ADV-HTM-007",
+    "category": "html-script",
+    "description": "Double entity-encoded script tag stripped without residual script or alert",
+    "input": "&amp;lt;script&amp;gt;alert(1)&amp;lt;/script&amp;gt;Staff Engineer",
+    "expect": {
+      "sanitizedChanged": true,
+      "expectedText": "Staff Engineer"
+    }
+  },
+  {
+    "id": "ADV-HTM-008",
+    "category": "html-script",
+    "description": "Entity-encoded img tag with onerror payload stripped cleanly",
+    "input": "&lt;img src=x onerror=alert(1)&gt;Lead Developer",
+    "expect": {
+      "sanitizedChanged": true,
+      "expectedText": "Lead Developer"
+    }
+  },
+  {
+    "id": "ADV-HTM-009",
+    "category": "html-script",
+    "description": "Legitimate inequality operators and ampersands preserved intact",
+    "input": "C# & .NET, salary < 10 LPA, 5 > 3",
+    "expect": {
+      "sanitizedChanged": false,
+      "expectedText": "C# & .NET, salary < 10 LPA, 5 > 3"
+    }
+  },
+  {
     "id": "ADV-MDX-001",
     "category": "markdown-exfil",
     "description": "Markdown image exfiltration with URL query string",

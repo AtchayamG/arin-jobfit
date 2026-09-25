@@ -161,4 +161,56 @@ describe("sanitizeText", () => {
     expect(Array.isArray(sanitizeExports.NAUKRI_HOSTS)).toBe(true);
     expect(Array.isArray(sanitizeExports.INDEED_HOSTS)).toBe(true);
   });
+
+  it("strips entity-encoded script tags without residual script or alert payload", () => {
+    const raw = "&lt;script&gt;alert(1)&lt;/script&gt;Staff Engineer";
+    const res = sanitizeText(raw);
+    expect(res.ok).toBe(true);
+    if (res.ok) {
+      expect(res.text).toBe("Staff Engineer");
+      expect(res.text).not.toContain("<script");
+      expect(res.text).not.toContain("alert(1)");
+    }
+  });
+
+  it("neutralizes double-encoded script tags cleanly", () => {
+    const raw = "&amp;lt;script&amp;gt;alert(1)&amp;lt;/script&amp;gt;Principal Architect";
+    const res = sanitizeText(raw);
+    expect(res.ok).toBe(true);
+    if (res.ok) {
+      expect(res.text).toBe("Principal Architect");
+      expect(res.text).not.toContain("<script");
+      expect(res.text).not.toContain("alert(1)");
+    }
+  });
+
+  it("strips entity-encoded img tags with onerror handlers leaving no <img", () => {
+    const raw = "&lt;img src=x onerror=alert(1)&gt;Lead Developer";
+    const res = sanitizeText(raw);
+    expect(res.ok).toBe(true);
+    if (res.ok) {
+      expect(res.text).toBe("Lead Developer");
+      expect(res.text).not.toContain("<img");
+    }
+  });
+
+  it("preserves legitimate text with inequality signs and ampersands", () => {
+    const raw = "C# & .NET, salary < 10 LPA, 5 > 3";
+    const res = sanitizeText(raw);
+    expect(res.ok).toBe(true);
+    if (res.ok) {
+      expect(res.text).toBe("C# & .NET, salary < 10 LPA, 5 > 3");
+      expect(res.changed).toBe(false);
+    }
+  });
+
+  it("preserves entity-encoded legitimate inequality signs and ampersands", () => {
+    const raw = "C# &amp; .NET, salary &lt; 10 LPA, 5 &gt; 3";
+    const res = sanitizeText(raw);
+    expect(res.ok).toBe(true);
+    if (res.ok) {
+      expect(res.text).toBe("C# & .NET, salary < 10 LPA, 5 > 3");
+      expect(res.changed).toBe(true);
+    }
+  });
 });

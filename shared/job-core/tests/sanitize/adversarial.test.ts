@@ -16,13 +16,15 @@ describe("Adversarial Security & Evasion Resistance", () => {
     }
   });
 
-  it("handles double-encoded entities safely without recursive evaluation", () => {
-    // &amp;lt;script&amp;gt; should decode to &lt;script&gt;, not execute as <script>
+  it("handles double-encoded entities safely by neutralizing revealed script markup", () => {
+    // &amp;lt;script&amp;gt;alert(1)&amp;lt;/script&amp;gt; must be neutralized, leaving no script or alert(1)
     const doubleEncoded = "&amp;lt;script&amp;gt;alert(1)&amp;lt;/script&amp;gt;";
     const sanitized = sanitizeText(doubleEncoded);
     expect(sanitized.ok).toBe(true);
     if (sanitized.ok) {
-      expect(sanitized.text).toBe("<script>alert(1)</script>");
+      expect(sanitized.text).toBe("");
+      expect(sanitized.text).not.toContain("<script");
+      expect(sanitized.text).not.toContain("alert(1)");
     }
   });
 

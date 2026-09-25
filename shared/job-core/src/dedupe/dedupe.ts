@@ -21,7 +21,7 @@ import { UnionFind } from "./union-find.js";
 export function areDuplicates(
   a: PreparedJob,
   b: PreparedJob,
-): { isDuplicate: boolean; evidence?: string } {
+): { isDuplicate: true; evidence: string } | { isDuplicate: false; evidence?: undefined } {
   // 1. Identical fingerprint
   if (a.job.fingerprint === b.job.fingerprint) {
     return {
@@ -66,13 +66,13 @@ export function findDuplicates(jobs: Job[]): FindDuplicatesResult {
   const pairEvidence: { i: number; j: number; evidence: string }[] = [];
 
   for (let i = 0; i < jobs.length; i++) {
-    const jobI = prepared[i];
-    if (!jobI) continue;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- bounded array index
+    const jobI = prepared[i]!;
     for (let j = i + 1; j < jobs.length; j++) {
-      const jobJ = prepared[j];
-      if (!jobJ) continue;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- bounded array index
+      const jobJ = prepared[j]!;
       const check = areDuplicates(jobI, jobJ);
-      if (check.isDuplicate && check.evidence) {
+      if (check.isDuplicate) {
         uf.union(i, j);
         pairEvidence.push({ i, j, evidence: check.evidence });
       }
@@ -84,10 +84,8 @@ export function findDuplicates(jobs: Job[]): FindDuplicatesResult {
 
   for (const [, indices] of rawGroups) {
     if (indices.length >= 2) {
-      const groupJobIds = indices
-        .map((idx) => jobs[idx]?.job_id)
-        .filter((id): id is string => typeof id === "string")
-        .sort();
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- bounded array index
+      const groupJobIds = indices.map((idx) => jobs[idx]!.job_id).sort();
       const indexSet = new Set(indices);
       const evidence = Array.from(
         new Set(
@@ -103,7 +101,8 @@ export function findDuplicates(jobs: Job[]): FindDuplicatesResult {
   }
 
   // Sort groups deterministically by their first job_id
-  groups.sort((a, b) => (a.job_ids[0] ?? "").localeCompare(b.job_ids[0] ?? ""));
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- group has at least 2 job_ids
+  groups.sort((a, b) => a.job_ids[0]!.localeCompare(b.job_ids[0]!));
 
   return { groups };
 }
@@ -122,7 +121,7 @@ export function checkIngestDuplicates(newJob: Job, existing: Job[]): CheckIngest
   for (const ex of existing) {
     const prepEx = prepareJob(ex);
     const check = areDuplicates(prepNew, prepEx);
-    if (check.isDuplicate && check.evidence) {
+    if (check.isDuplicate) {
       duplicates.push({
         job_id: ex.job_id,
         reason: check.evidence,

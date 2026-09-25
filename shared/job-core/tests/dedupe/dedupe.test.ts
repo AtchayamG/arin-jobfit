@@ -180,6 +180,38 @@ describe("deduplication engine", () => {
       expect(groups[0]?.job_ids).toEqual([job1.job_id, job2.job_id, job3.job_id]);
       expect(groups[0]?.evidence.length).toBeGreaterThanOrEqual(1);
     });
+
+    it("sorts multiple duplicate groups deterministically by their first job_id ASC", () => {
+      // Group B (higher job_ids, distinct company)
+      const jobB1 = createTestJob({
+        job_id: "job_00000000-0000-4000-8000-000000000003",
+        fingerprint: `sha256:${"b".repeat(64)}`,
+        company: "Beta Corp",
+      });
+      const jobB2 = createTestJob({
+        job_id: "job_00000000-0000-4000-8000-000000000004",
+        fingerprint: `sha256:${"b".repeat(64)}`,
+        company: "Beta Corp",
+      });
+
+      // Group A (lower job_ids, distinct company)
+      const jobA1 = createTestJob({
+        job_id: "job_00000000-0000-4000-8000-000000000001",
+        fingerprint: `sha256:${"a".repeat(64)}`,
+        company: "Alpha Corp",
+      });
+      const jobA2 = createTestJob({
+        job_id: "job_00000000-0000-4000-8000-000000000002",
+        fingerprint: `sha256:${"a".repeat(64)}`,
+        company: "Alpha Corp",
+      });
+
+      // Pass in reverse order [jobB1, jobB2, jobA1, jobA2]
+      const { groups } = findDuplicates([jobB1, jobB2, jobA1, jobA2]);
+      expect(groups.length).toBe(2);
+      expect(groups[0]?.job_ids).toEqual([jobA1.job_id, jobA2.job_id]);
+      expect(groups[1]?.job_ids).toEqual([jobB1.job_id, jobB2.job_id]);
+    });
   });
 
   describe("checkIngestDuplicates", () => {
