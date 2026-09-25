@@ -1,6 +1,6 @@
 # Task Status
 
-Last updated: 2026-09-25 (Review 1) by Claude. Plan: Doc 15. Work packages: Doc 16.
+Last updated: 2026-09-26 (Review 11) by Claude. Plan: Doc 15. Work packages: Doc 16.
 
 ## Phase 0 — Architecture: COMPLETE
 - [x] Docs 14–19 issued; git initialized (WP-SH-000)
@@ -29,8 +29,26 @@ Last updated: 2026-09-25 (Review 1) by Claude. Plan: Doc 15. Work packages: Doc 
 | WP-SEC-001A security review job-core + indeed-mcp | AGY | PASS (F-1 Low → QA-001) |
 
 | WP-SH-012 Indian grouping / rounding / F-1 | AGY | PASS (F-1 documented limitation) |
-| WP-SEC-001B naukri-mcp security | AGY | IN PROGRESS |
-| WP-REL-001 release packaging (Arin JobFit) | Codex | READY |
+| WP-SEC-001B naukri-mcp security | AGY | PASS |
+| WP-REL-001 release packaging (Arin JobFit) | Codex | PASS (R-13 fixed) |
 
 ## Phases 2–8
 See Doc 15 §3. Provider adapters (P7): BLOCKED_BY_PROVIDER_APPROVAL.
+
+## Release — v0.1.x: PUBLISHED
+
+| WP | Agent | Status |
+|---|---|---|
+| WP-REL-002 public repo + CI | Codex | PASS |
+| npm publish 0.1.0 | Owner | DONE |
+| WP-QA-003 E2E of published packages | AGY | CHANGES REQUIRED → R1 PASS |
+| WP-REL-003 polish, usage fix, v0.1.1 | Codex | PASS |
+| npm publish 0.1.1 + GitHub releases | Owner | DONE |
+
+## Next
+- [ ] Push qa/released (e047c9b) + these doc updates via PR (main is protected)
+- [ ] Demo recording, reel, LinkedIn post
+- [ ] CMP-001 Gemini CLI / Kimi verification
+- [ ] Phase 6 hosted mode (ChatGPT, Grok, web) — design first
+- [ ] Partner replies (Naukri, Indeed); trademark review before any paid launch
+

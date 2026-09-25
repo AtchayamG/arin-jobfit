@@ -1,16 +1,18 @@
 # Handover
 
-## Current state (2026-09-25, after Review 1)
+## Current state (2026-09-26, after Review 11)
 
-job-core has contract schemas, envelope builders, JSON Schema export and the fail-closed policy engine; both product policy.json files ship with L0 only. All verified independently by the Architect on a clean checkout. No portal approvals exist.
+Arin JobFit v0.1.1 is live: `arin-jobfit-nk` and `arin-jobfit-id` on npm, public repo github.com/AtchayamG/arin-jobfit (Apache-2.0), CI green, GitHub release v0.1.1 = Latest. Phases 1–3 complete; Phase 4 partial (Claude Code + Codex verified; Gemini CLI / Kimi pending); Phase 5 partner pack issued. Published packages verified end-to-end by `qa/released` (`npm run e2e`): 35/35 checks, 90 schema validations, 0 defects.
 
-## Pending owner decisions
-BCP-001..004 (Doc 14 §5). Needed before WP-SH-008.
+## Open items
+- qa/released commit e047c9b and Docs updates are local — push via PR.
+- Minor harness tidy (display literal `noNetwork: true`, isolation suite on @0.1.0, report filename) — fold into next QA WP.
+- naukri unknown-arg output lacks the 'Unknown argument(s)' line (cosmetic, next release).
+- F-1 (SDK pre-handler validation returns plain text) remains a documented limitation.
 
-## Next actors (parallel)
-- Codex — WP-SH-003 (review-1 fixes R-1/R-2 first, then normalization + extraction + taxonomy).
-- AGY — WP-SH-004 (R-4 policy timezone fix first, then sanitizer/injection/URL/corpus).
-Return both handovers to Claude for Review 2.
+## Next actors
+- Owner — demo recording, reel, LinkedIn post (Claude drafts copy).
+- Codex/AGY — CMP-001 (Gemini CLI, Kimi), then Phase 6 design (Claude first).
 
 ## Developer protocol
-Doc 16 §2 ownership, path-scoped commits, `Docs/handovers/<WP-ID>.md`, COMMIT line = `git rev-parse --short HEAD`.
+Doc 16 §2 ownership, path-scoped commits, `Docs/handovers/<WP-ID>.md`, COMMIT line = `git rev-parse --short HEAD`, AGENTS.md token discipline.
