@@ -26,3 +26,15 @@ These rules apply to Claude, Codex, AGY and every other coding/review agent work
 ## Clean repository policy
 
 Root stays clean. Production code belongs only inside `naukri-mcp/` or `indeed-mcp/`. Shared protocol definitions belong in `shared/`. Research, decisions and plans belong in `Docs/`. Prompts belong in `Prompts/`. Generated build output, caches, secrets, screenshots and temporary downloads never belong in the root.
+
+## Token discipline (all agents, added 2026-09-25)
+
+Usage limits have interrupted work twice. Every agent follows these rules:
+
+1. Read only the files and sections named in your work package. Locate a section with `grep -n` or `rg` and read only that range. Never read whole large docs or generated files (lockfiles, `shared/schemas/*.json`, `shared/contracts/*.json`).
+2. Do not re-read files you just wrote, and do not print whole files to the console.
+3. Keep test output short: `npx vitest run <scoped paths> --reporter=dot`, and pipe long output through `tail -30`. While iterating, run scoped tests. Run the full `npm run verify` **once**, at the end.
+4. **Never wait for or poll another agent's work.** If the shared tree has another agent's uncommitted changes, run scoped gates on your own paths, commit your own paths, and note it in the handover. The Architect runs the combined gate.
+5. Commit at stable checkpoints (scoped tests green) using `WP-XX-NNN: checkpoint <what>`, so that a usage cutoff never strands uncommitted work.
+6. Keep the handover to 40 lines or fewer. Give facts and numbers, not narration.
+7. Use the model tier stated in the prompt. Do not escalate on your own; report instead.
