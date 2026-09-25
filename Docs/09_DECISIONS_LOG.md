@@ -27,13 +27,19 @@ Architecture decisions (Architect authority; detail in Doc 14 §4):
 - ADR-008: Parallel-work protocol — disjoint file ownership, path-scoped commits, `Docs/handovers/<WP-ID>.md`; only Architect edits Docs/09–11, 14–19, Blueprints, Shared Contract.
 - ADR-009: No L0 tool ever fetches an external URL.
 
-Blueprint Change Proposals raised — **PENDING OWNER APPROVAL** (Doc 14 §5):
+Blueprint Change Proposals (Doc 14 §5):
 
-- BCP-001 snake_case tool names — PENDING
-- BCP-002 profile & data-rights tools — PENDING
-- BCP-003 Indeed Blueprint repositioning (official Indeed MCP exists) — PENDING
-- BCP-004 public naming neutral brand — PENDING
+- BCP-001 snake_case tool names — **APPROVED by owner 2026-09-25**
+- BCP-002 profile & data-rights tools — **APPROVED by owner 2026-09-25**
+- BCP-003 Indeed Blueprint repositioning (official Indeed MCP exists) — **APPROVED by owner 2026-09-25**
+- BCP-004 public naming neutral brand — **APPROVED by owner 2026-09-25**
 
 ## Approval reference format
 
 Written portal approvals are recorded here under a heading `APPROVAL-NAUKRI-NNN` or `APPROVAL-INDEED-NNN` with date, sender, scope, services, limits and a link/attachment reference. `policy-lint` requires the exact token to exist here before any L1+ capability can be enabled. No such approvals exist as of 2026-09-25.
+
+## 2026-09-25 — Owner approvals (Atchayam G)
+
+- BCP-001, BCP-002, BCP-003 and BCP-004 were approved as recommended. Blueprints 02 and 03 and Shared Contract 04 were amended the same day.
+- BCP-003 follow-up: a short clarification email to Indeed was authorized ("send mail if needed"). It is recorded in Doc 13.
+- BCP-004: the public brand is still to be chosen by the owner before Phase 5.

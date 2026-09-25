@@ -1,6 +1,6 @@
 # Architect Audit v1
 
-Author: Claude (Principal Architect) · Date: 2026-09-25 · Status: **ISSUED — awaiting owner approval of BCP-001..004**
+Author: Claude (Principal Architect) · Date: 2026-09-25 · Status: **ISSUED — BCP-001..004 APPROVED by owner 2026-09-25**
 
 Scope: full authority package (`README.md`, `AGENTS.md`, `MANIFEST.json`, `Docs/00–13`, product/shared READMEs, `Prompts/`). The repository contains documentation only; no source code exists yet.
 
@@ -111,7 +111,7 @@ Severity: **C** = critical (blocks a phase) · **H** = high · **M** = medium ·
 
 ## 5. Blueprint Change Proposals (STOP — require owner approval)
 
-### BCP-001 — Tool naming
+### BCP-001 — ✅ APPROVED 2026-09-25 — — Tool naming
 
 - **PROPOSED BLUEPRINT CHANGE:** Rename all tools in Blueprints 02 §4 and 03 §5 and in Shared Contract 04 from dotted to snake_case: `jobs.ingest` → `jobs_ingest`, `provider.capabilities` → `provider_capabilities`, and so on. Future partner tools use the `provider_` prefix.
 - **REASON:** F2. The Claude API, OpenAI/Codex and Copilot enforce `^[a-zA-Z0-9_-]{1,64}$`.
@@ -121,7 +121,7 @@ Severity: **C** = critical (blocks a phase) · **H** = high · **M** = medium ·
 - **ALTERNATIVES:** Keep dots and rely on client remapping (fragile, fails on some clients); use hyphens (valid, but less idiomatic for LLM function names).
 - **RECOMMENDATION:** Approve.
 
-### BCP-002 — Profile and data-rights tools
+### BCP-002 — ✅ APPROVED 2026-09-25 — — Profile and data-rights tools
 
 - **PROPOSED BLUEPRINT CHANGE:** Add `profile_upsert`, `profile_get`, `profile_list`, `profile_delete`, `jobs_delete`, `data_export`, `data_purge` to both products' tool sets and to the Shared Contract.
 - **REASON:** A-04, A-05, and Security Policy 05 (user deletion/export, consent).
@@ -131,7 +131,7 @@ Severity: **C** = critical (blocks a phase) · **H** = high · **M** = medium ·
 - **ALTERNATIVES:** Accept inline profiles only (no persistence), which forces CV re-upload on every call and increases PII transit.
 - **RECOMMENDATION:** Approve.
 
-### BCP-003 — Indeed Blueprint repositioning
+### BCP-003 — ✅ APPROVED 2026-09-25 — — Indeed Blueprint repositioning
 
 - **PROPOSED BLUEPRINT CHANGE:** Amend Blueprint 03:
   - (a) §2/§7: record that Indeed ships an official MCP server (beta).
@@ -144,7 +144,7 @@ Severity: **C** = critical (blocks a phase) · **H** = high · **M** = medium ·
 - **ALTERNATIVES:** Keep the Blueprint unchanged (it is misaligned with market reality); drop `indeed-mcp` (loses a product line that still has value as an analysis layer).
 - **RECOMMENDATION:** Approve. Also send a short follow-up to Indeed referencing their MCP and asking the agent-relay and naming questions.
 
-### BCP-004 — Public product naming
+### BCP-004 — ✅ APPROVED 2026-09-25 — — Public product naming
 
 - **PROPOSED BLUEPRINT CHANGE:** Blueprints 02/03 §1: "Naukri MCP" / "Indeed MCP" remain **internal working names only**. Before any public release, the owner selects a neutral public brand (for example "<Brand> Job Fit — Naukri edition"), subject to trademark review. The MCP `serverInfo.name` stays `naukri-mcp` / `indeed-mcp` until then; these are private builds only.
 - **REASON:** P-02.

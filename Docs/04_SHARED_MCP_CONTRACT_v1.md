@@ -19,50 +19,62 @@ Errors must be structured and actionable. Provider permission errors are not con
 
 ## Core tools
 
-### `provider.capabilities()`
+### `provider_capabilities()`
 Reports enabled, disabled and pending capabilities with the reason/source of authority.
 
-### `provider.policy_status()`
+### `provider_policy_status()`
 Reports policy snapshot date and whether official partner approval is recorded.
 
-### `jobs.ingest(job)`
+### `jobs_ingest(job)`
 Accepts user/authorized-source supplied job information and creates a normalized record.
 
-### `jobs.get(job_id)`
+### `jobs_get(job_id)`
 Reads a normalized stored job.
 
-### `jobs.list(filters)`
+### `jobs_list(filters)`
 Lists stored jobs.
 
-### `jobs.search_local(query, filters)`
+### `jobs_search_local(query, filters)`
 Searches only the connector's authorized local store. It must not silently turn into live portal scraping.
 
-### `jobs.normalize(job)`
+### `jobs_normalize(job)`
 Transforms provider/user input into common schema.
 
-### `jobs.extract_requirements(job_id)`
+### `jobs_extract_requirements(job_id)`
 Returns must-have, preferred, responsibilities, experience, location, compensation and constraints when present.
 
-### `jobs.compare_profile(job_id, profile_id|profile)`
+### `jobs_compare_profile(job_id, profile_id|profile)`
 Returns explainable match dimensions and gaps.
 
-### `jobs.explain_match(job_id, profile_id|profile)`
+### `jobs_explain_match(job_id, profile_id|profile)`
 Returns human-readable evidence for each score component.
 
-### `jobs.shortlist(profile, filters)`
+### `jobs_shortlist(profile, filters)`
 Ranks only already-authorized records using transparent criteria.
 
-### `jobs.deduplicate(job_ids)`
+### `jobs_deduplicate(job_ids)`
 Identifies likely duplicates and explains the matching evidence.
 
-### `jobs.prepare_cv_notes(job_id, profile)`
+### `jobs_prepare_cv_notes(job_id, profile)`
 Suggests truthful emphasis/reordering; never invents experience.
 
-### `jobs.prepare_interview(job_id, profile)`
+### `jobs_prepare_interview(job_id, profile)`
 Generates interview topics/questions grounded in the JD and profile.
 
-### `jobs.application_handoff(job_id)`
+### `jobs_application_handoff(job_id)`
 Returns official source URL plus a human checklist. No submission is performed.
+
+
+Tool naming (BCP-001, approved 2026-09-25): tool names use `snake_case` `<domain>_<verb>` and must match `^[a-zA-Z0-9_-]{1,64}$` (Claude API, OpenAI/Codex and Copilot reject dots).
+
+### Profile & data-rights tools (BCP-002)
+- `profile_upsert(profile, profile_id?)` creates or updates a stored profile (strict schema, no protected attributes).
+- `profile_get(profile_id)` / `profile_list()` read stored profiles.
+- `profile_delete(profile_id)` / `jobs_delete(job_id)` delete one record (destructive; annotated).
+- `data_export()` exports all jobs and profiles (no audit data).
+- `data_purge(confirmation_token?)`: step 1 returns a single-use, 5-minute token plus a summary; step 2 with the token deletes all user data.
+
+Full schemas: `Docs/17_MCP_TOOL_SCHEMA_PLAN_v1.md`.
 
 ## Human approval envelope for any future write tool
 
@@ -73,3 +85,7 @@ If partner approval later allows external writes, every write must use a two-sta
 4. read-back verification
 
 Never allow “approve all future applications”.
+
+
+## Change history
+- 2026-09-25: BCP-001 and BCP-002 approved by owner.

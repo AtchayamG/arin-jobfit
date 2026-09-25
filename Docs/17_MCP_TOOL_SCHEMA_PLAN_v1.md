@@ -1,7 +1,7 @@
 # MCP Tool Schema Plan v1
 
 Author: Claude (Principal Architect) · Date: 2026-09-25 · Contract version: `1.0.0`
-Tool names assume **BCP-001 (snake_case)**. Tools marked ★ assume **BCP-002**. If either BCP is rejected, this document is revised before Phase 2 and Phase 1 is unaffected.
+Tool names follow **BCP-001 (snake_case)** and tools marked ★ come from **BCP-002**. Both were approved by the owner on 2026-09-25.
 
 ## 1. Protocol targets
 
