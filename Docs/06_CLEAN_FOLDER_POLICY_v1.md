@@ -74,4 +74,4 @@ Put local generated artifacts under each product's ignored `tmp/`, `logs/`, `cov
 
 ## Amendment 2026-09-25 (release, WP-REL-001)
 
-The following are permitted at the repository root: `LICENSE`, `NOTICE`, `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md` and `.github/` (CI workflows and templates).
+The following are permitted at the repository root: `LICENSE`, `NOTICE`, `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `.gitleaks.toml` and `.github/` (CI workflows and templates).

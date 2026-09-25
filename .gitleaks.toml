@@ -1,0 +1,11 @@
+# gitleaks configuration: default rules plus a narrow allowlist for synthetic test fixtures.
+# Every allowlisted value below is a deliberately fake string used by unit tests; none is a real credential.
+title = "arin-jobfit gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Synthetic test fixtures (verified non-secret by the Architect, 2026-09-26)"
+# base64 of "secret_token_1234567890", used in the prompt-injection detector test (shared/job-core/tests/sanitize/injection.test.ts)
+regexes = ['''c2VjcmV0X3Rva2VuXzEyMzQ1Njc4OTA=''']
