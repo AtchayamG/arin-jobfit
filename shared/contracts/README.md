@@ -1,3 +1,3 @@
-# Shared Contracts
+# Tool manifest
 
-This folder is reserved for provider-neutral MCP contract definitions after Claude freezes the schema plan. Do not place provider-specific credentials or API payload models here.
+`tool-manifest.v1.json` is the deterministic, reviewable MCP tool catalogue for both local products. Regenerate it from `shared/job-core` with `npm run manifest:export`; `npm run verify` checks for drift. Inputs use the portable JSON Schema subset; outputs describe the structured envelope.

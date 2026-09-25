@@ -42,8 +42,15 @@ export const envelopeSchema = <T extends z.ZodType>(dataSchema: T) =>
     .refine(
       (value) =>
         (value.status === "error") === (value.error !== null) &&
-        (value.status !== "error" || ("data" in value && value.data === null)),
-      { message: "Error status requires an error and null data; non-error status forbids error" },
+        (value.status !== "error" ||
+          ("data" in value &&
+            (value.error?.code === "CONFIRMATION_REQUIRED"
+              ? value.data !== null
+              : value.data === null))),
+      {
+        message:
+          "Error status requires an error and null data except CONFIRMATION_REQUIRED with data",
+      },
     );
 
 export type Envelope<T> = z.infer<ReturnType<typeof envelopeSchema<z.ZodType<T>>>>;
