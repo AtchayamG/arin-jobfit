@@ -27,9 +27,11 @@ describe("normalization parsers", () => {
     ["₹ 12-18 Lacs P.A.", "naukri", "INR", 1_200_000, 1_800_000, "year"],
     ["12-18 LPA", "naukri", "INR", 1_200_000, 1_800_000, "year"],
     ["1.2 Cr", "naukri", "INR", 12_000_000, 12_000_000, "year"],
+    ["1 - 2 Crore", "naukri", "INR", 10_000_000, 20_000_000, "year"],
     ["₹30,000 - ₹45,000 a month", "indeed", "INR", 30_000, 45_000, "month"],
     ["$120,000 - $150,000 a year", "indeed", "USD", 120_000, 150_000, "year"],
     ["$25 an hour", "indeed", "USD", 25, 25, "hour"],
+    ["₹50,000", "indeed", "INR", 50_000, 50_000, "unknown"],
   ] as const)("parses compensation %s", (text, provider, currency, min, max, period) => {
     const result = parseCompensation(text, provider);
     expect(result.value).toMatchObject({ currency, min, max, period, disclosed: true });
@@ -39,8 +41,13 @@ describe("normalization parsers", () => {
   it("does not invent unreadable values", () => {
     expect(parseExperience("unknown years", "indeed").warning?.code).toBe("FIELD_UNPARSED");
     expect(parseExperience("61 years", "indeed").value.min_years).toBeNull();
+    expect(parseExperience("10-5 years", "indeed").warning?.code).toBe("FIELD_UNPARSED");
     expect(parseCompensation("salary TBD", "indeed").warning?.code).toBe("FIELD_UNPARSED");
     expect(parseCompensation("Not Disclosed", "naukri").value.disclosed).toBe(false);
+    expect(parseCompensation("", "indeed").value.disclosed).toBe(false);
+    expect(parseCompensation(undefined, "indeed").value.disclosed).toBe(false);
+    expect(parseCompensation("₹200 - ₹100", "indeed").warning?.code).toBe("FIELD_UNPARSED");
+    expect(parseCompensation("₹2,000,000,000", "indeed").warning?.code).toBe("FIELD_UNPARSED");
   });
 
   it.each([

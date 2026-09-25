@@ -1,5 +1,5 @@
 import type { Job, Requirements, Warning } from "../schemas/index.js";
-import { detectDiscriminatory } from "./discrimination.js";
+import { detectDiscriminatoryAll } from "./discrimination.js";
 import { classifyItem, sectionItems } from "./sections.js";
 import { matchSkills } from "./taxonomy.js";
 
@@ -23,9 +23,11 @@ export function extractRequirements(job: Job): Requirements {
   const discriminatory_flags: Requirements["discriminatory_flags"] = [];
   for (const item of sectionItems(job.description)) {
     const text = item.text.slice(0, 500);
-    const flag = detectDiscriminatory(text);
-    if (flag) {
-      if (discriminatory_flags.length < 50) discriminatory_flags.push(flag);
+    const flags = detectDiscriminatoryAll(text);
+    if (flags.length > 0) {
+      for (const flag of flags) {
+        if (discriminatory_flags.length < 50) discriminatory_flags.push(flag);
+      }
       continue;
     }
     const kind = constraintPatterns.find(([, pattern]) => pattern.test(text))?.[0];

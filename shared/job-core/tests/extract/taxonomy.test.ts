@@ -30,4 +30,46 @@ describe("skills taxonomy", () => {
     expect(matchSkills("We go to office; Golang experience helps")).toEqual(["Go"]);
     expect(matchSkills("Python python PYTHON")).toEqual(["Python"]);
   });
+
+  it("handles trailing punctuation per R-7 probe strings", () => {
+    expect(matchSkills("Docker, Kubernetes.")).toEqual(["Docker", "Kubernetes"]);
+    expect(matchSkills("Must know Go and Java.")).toEqual(["Go", "Java"]);
+    expect(matchSkills("Good to have: Flutter, Go, AWS.")).toEqual(["Flutter", "Go", "AWS"]);
+  });
+
+  describe("trailing punctuation boundary table", () => {
+    const cases = [
+      { text: "Experience with Kubernetes.", expected: ["Kubernetes"] },
+      { text: "Proficient in Docker, Kubernetes, AWS", expected: ["Docker", "Kubernetes", "AWS"] },
+      { text: "Required: Docker; Kubernetes; AWS;", expected: ["Docker", "Kubernetes", "AWS"] },
+      { text: "Core skill: AWS: expert level", expected: ["AWS"] },
+      { text: "Tools (Docker, Kubernetes)", expected: ["Docker", "Kubernetes"] },
+      { text: "Stack [Docker, Kubernetes]", expected: ["Docker", "Kubernetes"] },
+      { text: "We love Kubernetes!", expected: ["Kubernetes"] },
+      { text: "Do you know Kubernetes?", expected: ["Kubernetes"] },
+      { text: "Cloud skills:\nKubernetes\nDocker", expected: ["Kubernetes", "Docker"] },
+      { text: "Strong in .NET.", expected: [".NET"] },
+      { text: "Proficient in Node.js.", expected: ["Node.js"] },
+      { text: "Experience in C++.", expected: ["C++"] },
+      { text: "Skilled in C#.", expected: ["C#"] },
+      { text: "Hands-on with RxJS.", expected: ["RxJS"] },
+      { text: "Design REST APIs.", expected: ["REST"] },
+      { text: "Enterprise SAP ABAP.", expected: ["SAP ABAP"] },
+      { text: "Database: Oracle.", expected: ["Oracle"] },
+      { text: "Stored procedures in PL/SQL.", expected: ["PL/SQL"] },
+      { text: "Testing with Appium and JMeter.", expected: ["Appium", "JMeter"] },
+    ];
+
+    it.each(cases)("extracts skills from '$text'", ({ text, expected }) => {
+      expect(matchSkills(text)).toEqual(expected);
+    });
+  });
+
+  it("rejects false positives across symbol boundaries", () => {
+    expect(matchSkills("Google")).toEqual([]);
+    expect(matchSkills("foo.NET")).toEqual([]);
+    expect(matchSkills("..NET")).toEqual([]);
+    expect(matchSkills("Kubernetes.io")).toEqual([]);
+    expect(matchSkills("Java.class")).toEqual([]);
+  });
 });

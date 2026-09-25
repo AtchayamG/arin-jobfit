@@ -44,7 +44,7 @@
     { "name": "Django", "aliases": [], "category": "framework" },
     { "name": "Flask", "aliases": [], "category": "framework" },
     { "name": "FastAPI", "aliases": [], "category": "framework" },
-    { "name": "Spring Boot", "aliases": [], "category": "framework" },
+    { "name": "Spring Boot", "aliases": ["SpringBoot"], "category": "framework" },
     { "name": "Spring MVC", "aliases": [], "category": "framework" },
     { "name": "Quarkus", "aliases": [], "category": "framework" },
     { "name": "Micronaut", "aliases": [], "category": "framework" },
@@ -82,11 +82,19 @@
     { "name": "Progressive Web Apps", "aliases": ["PWA"], "category": "frontend" },
     { "name": "Web Performance", "aliases": [], "category": "frontend" },
     { "name": "Node.js", "aliases": ["NodeJS"], "category": "backend" },
-    { "name": "REST APIs", "aliases": ["RESTful APIs"], "category": "backend" },
+    {
+      "name": "REST",
+      "aliases": ["REST API", "RESTful", "REST APIs", "RESTful APIs"],
+      "category": "backend"
+    },
     { "name": "GraphQL", "aliases": [], "category": "backend" },
     { "name": "gRPC", "aliases": [], "category": "backend" },
     { "name": "WebSockets", "aliases": [], "category": "backend" },
-    { "name": "Microservices", "aliases": [], "category": "backend" },
+    {
+      "name": "Microservices",
+      "aliases": ["Microservice", "Microservice Architecture"],
+      "category": "backend"
+    },
     { "name": "Event Driven Architecture", "aliases": [], "category": "backend" },
     { "name": "Domain Driven Design", "aliases": ["DDD"], "category": "backend" },
     { "name": "CQRS", "aliases": [], "category": "backend" },
@@ -263,7 +271,11 @@
     { "name": "DynamoDB", "aliases": [], "category": "database" },
     { "name": "Cassandra", "aliases": [], "category": "database" },
     { "name": "MariaDB", "aliases": [], "category": "database" },
-    { "name": "Oracle Database", "aliases": [], "category": "database" },
+    {
+      "name": "Oracle",
+      "aliases": ["Oracle Database", "Oracle DB", "Oracle SQL"],
+      "category": "database"
+    },
     { "name": "SQL Server", "aliases": [], "category": "database" },
     { "name": "CockroachDB", "aliases": [], "category": "database" },
     { "name": "Neo4j", "aliases": [], "category": "database" },
@@ -317,6 +329,15 @@
     { "name": "Waterfall", "aliases": [], "category": "methodology" },
     { "name": "SAFe", "aliases": [], "category": "methodology" },
     { "name": "Six Sigma", "aliases": [], "category": "methodology" },
-    { "name": "OKRs", "aliases": [], "category": "methodology" }
+    { "name": "OKRs", "aliases": [], "category": "methodology" },
+    { "name": "RxJS", "aliases": ["Rx.js"], "category": "frontend" },
+    { "name": "NgRx", "aliases": [], "category": "frontend" },
+    { "name": "Hibernate", "aliases": ["Hibernate ORM"], "category": "framework" },
+    { "name": "PL/SQL", "aliases": ["PLSQL", "PL-SQL"], "category": "database" },
+    { "name": "SAP ABAP", "aliases": ["ABAP"], "category": "language" },
+    { "name": "Salesforce", "aliases": ["SFDC", "Salesforce CRM"], "category": "tool" },
+    { "name": "Appium", "aliases": [], "category": "testing" },
+    { "name": "JMeter", "aliases": ["Apache JMeter"], "category": "testing" },
+    { "name": "Informatica", "aliases": ["Informatica PowerCenter"], "category": "data" }
   ]
 }

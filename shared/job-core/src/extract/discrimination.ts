@@ -4,7 +4,7 @@ export type DiscriminatoryFlag = Requirements["discriminatory_flags"][number];
 const patterns: ReadonlyArray<readonly [DiscriminatoryFlag["category"], RegExp]> = [
   [
     "age",
-    /\b(?:age\s*(?:limit|between|:)?\s*\d{1,2}|aged?\s+\d{1,2}|under\s+\d{1,2}\s+years?\s+old|young candidates? only|below\s+\d{1,2}\s+years?\s+of\s+age)\b/i,
+    /\b(?:age\s*(?:limit|criteria|range|bracket)?\s*[:=]?\s*(?:below|under|above|over|less than|greater than|not exceeding|max|maximum|min|minimum)?\s*\d{1,2}(?:\s*(?:-|–|to|and)\s*\d{1,2})?(?:\s*years?(?:\s*old)?)?|aged?\s*(?:between\s*)?\d{1,2}(?:\s*(?:-|–|to|and)\s*\d{1,2})?(?:\s*years?(?:\s*old)?)?|(?:max|maximum|min|minimum)\s+age\s*[:=]?\s*\d{1,2}|age\s+limit\b|(?:under|below|over|above|not more than|no more than|less than|greater than)\s+\d{1,2}\s+years?\s+old|(?:under|below|over|above)\s+\d{1,2}\s+years?\s+of\s+age|born\s+(?:on\s+or\s+)?(?:after|before|in)\s+(?:19\d{2}|20\d{2})|young\s+(?:\w+\s+)?candidates?\s+only)\b/i,
   ],
   [
     "gender",
@@ -17,7 +17,7 @@ const patterns: ReadonlyArray<readonly [DiscriminatoryFlag["category"], RegExp]>
   ["caste", /\b(?:upper\s+caste|lower\s+caste|brahmin\s+only|caste\s*:\s*\w+|specific\s+caste)\b/i],
   [
     "marital_status",
-    /\b(?:unmarried\s+only|only\s+unmarried|must\s+be\s+single|married\s+(?:women|men)\s+need\s+not\s+apply|single\s+(?:women|men)\s+only)\b/i,
+    /\b(?:unmarried\s+(?:(?:male|female|men|women|candidates?|applicants?)\s+)?only|only\s+unmarried|must\s+be\s+single|married\s+(?:women|men)\s+need\s+not\s+apply|single\s+(?:(?:women|men|candidates?|applicants?)\s+)?only)\b/i,
   ],
   [
     "nationality_origin",
@@ -33,7 +33,18 @@ const patterns: ReadonlyArray<readonly [DiscriminatoryFlag["category"], RegExp]>
   ],
 ];
 
+export function detectDiscriminatoryAll(text: string): DiscriminatoryFlag[] {
+  const flags: DiscriminatoryFlag[] = [];
+  const trimmed = text.slice(0, 500);
+  for (const [category, pattern] of patterns) {
+    if (pattern.test(text)) {
+      flags.push({ text: trimmed, category });
+    }
+  }
+  return flags;
+}
+
 export function detectDiscriminatory(text: string): DiscriminatoryFlag | null {
-  const category = patterns.find(([, pattern]) => pattern.test(text))?.[0];
-  return category ? { text: text.slice(0, 500), category } : null;
+  const flags = detectDiscriminatoryAll(text);
+  return flags[0] ?? null;
 }

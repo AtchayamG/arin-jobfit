@@ -50,7 +50,7 @@ const aliases = skillsTaxonomy.skills
   .sort((left, right) => right.alias.length - left.alias.length);
 const escape = (text: string): string => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const matcher = new RegExp(
-  `(?<![\\p{L}\\p{N}+#.])(?:${aliases.map((entry) => escape(entry.alias)).join("|")})(?![\\p{L}\\p{N}+#.])`,
+  `(?<![\\p{L}\\p{N}+#]|\\.)(?:${aliases.map((entry) => escape(entry.alias)).join("|")})(?![\\p{L}\\p{N}+#]|\\.[\\p{L}\\p{N}])`,
   "giu",
 );
 const canonical = new Map(aliases.map((entry) => [entry.alias.toLowerCase(), entry.name]));
