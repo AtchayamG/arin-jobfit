@@ -1,0 +1,32 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "actions": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "official_url": {
+      "anyOf": [
+        {
+          "format": "uri",
+          "pattern": "^https://",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reason": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "reason",
+    "actions",
+    "official_url"
+  ],
+  "type": "object"
+}

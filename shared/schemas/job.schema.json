@@ -1,0 +1,422 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "company": {
+      "anyOf": [
+        {
+          "maxLength": 200,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "compensation": {
+      "additionalProperties": false,
+      "properties": {
+        "currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "disclosed": {
+          "type": "boolean"
+        },
+        "max": {
+          "anyOf": [
+            {
+              "maximum": 1000000000,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "min": {
+          "anyOf": [
+            {
+              "maximum": 1000000000,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "period": {
+          "enum": [
+            "year",
+            "month",
+            "hour",
+            "unknown"
+          ],
+          "maxLength": 7,
+          "type": "string"
+        },
+        "raw": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "raw",
+        "currency",
+        "min",
+        "max",
+        "period",
+        "disclosed"
+      ],
+      "type": "object"
+    },
+    "description": {
+      "maxLength": 50000,
+      "minLength": 1,
+      "type": "string"
+    },
+    "employment_type": {
+      "enum": [
+        "full_time",
+        "part_time",
+        "contract",
+        "internship",
+        "temporary",
+        "unknown"
+      ],
+      "maxLength": 10,
+      "type": "string"
+    },
+    "experience": {
+      "additionalProperties": false,
+      "properties": {
+        "max_years": {
+          "anyOf": [
+            {
+              "maximum": 60,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "min_years": {
+          "anyOf": [
+            {
+              "maximum": 60,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "raw": {
+          "anyOf": [
+            {
+              "maxLength": 100,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "min_years",
+        "max_years",
+        "raw"
+      ],
+      "type": "object"
+    },
+    "fingerprint": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "flags": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "enum": [
+              "UNTRUSTED_CONTENT",
+              "PROMPT_INJECTION_SUSPECTED",
+              "CONTENT_SANITIZED",
+              "POTENTIALLY_DISCRIMINATORY_REQUIREMENT",
+              "FIELD_UNPARSED",
+              "URL_NOT_OFFICIAL",
+              "DUPLICATE_SUSPECTED",
+              "OUTPUT_TRUNCATED",
+              "LOW_CONFIDENCE"
+            ],
+            "maxLength": 38,
+            "type": "string"
+          },
+          "field": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "type": "object"
+      },
+      "maxItems": 50,
+      "type": "array"
+    },
+    "ingested_at": {
+      "format": "date-time",
+      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+      "type": "string"
+    },
+    "job_id": {
+      "pattern": "^job_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "location": {
+      "additionalProperties": false,
+      "properties": {
+        "city": {
+          "anyOf": [
+            {
+              "maxLength": 100,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "country": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{2}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "raw": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "raw",
+        "city",
+        "country"
+      ],
+      "type": "object"
+    },
+    "posted_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "posted_at_raw": {
+      "anyOf": [
+        {
+          "maxLength": 100,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "preferred_skills": {
+      "items": {
+        "maxLength": 100,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 100,
+      "type": "array"
+    },
+    "provider": {
+      "enum": [
+        "naukri",
+        "indeed"
+      ],
+      "maxLength": 6,
+      "type": "string"
+    },
+    "provider_job_id": {
+      "anyOf": [
+        {
+          "maxLength": 100,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "qualifications": {
+      "items": {
+        "maxLength": 1000,
+        "type": "string"
+      },
+      "maxItems": 100,
+      "type": "array"
+    },
+    "remote_mode": {
+      "enum": [
+        "onsite",
+        "hybrid",
+        "remote",
+        "unknown"
+      ],
+      "maxLength": 7,
+      "type": "string"
+    },
+    "required_skills": {
+      "items": {
+        "maxLength": 100,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 100,
+      "type": "array"
+    },
+    "responsibilities": {
+      "items": {
+        "maxLength": 1000,
+        "type": "string"
+      },
+      "maxItems": 100,
+      "type": "array"
+    },
+    "retention_class": {
+      "enum": [
+        "session",
+        "standard_180d",
+        "pinned"
+      ],
+      "maxLength": 13,
+      "type": "string"
+    },
+    "source_provenance": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "captured_at": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+            "type": "string"
+          },
+          "detail": {
+            "maxLength": 200,
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "user_supplied",
+              "agent_relay",
+              "provider_api",
+              "derived"
+            ],
+            "maxLength": 13,
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "detail",
+          "captured_at"
+        ],
+        "type": "object"
+      },
+      "maxItems": 10,
+      "minItems": 1,
+      "type": "array"
+    },
+    "source_url": {
+      "anyOf": [
+        {
+          "format": "uri",
+          "maxLength": 2048,
+          "pattern": "^https://",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "source_url_is_official": {
+      "type": "boolean"
+    },
+    "title": {
+      "maxLength": 200,
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "required": [
+    "job_id",
+    "provider",
+    "provider_job_id",
+    "source_url",
+    "source_url_is_official",
+    "title",
+    "company",
+    "location",
+    "remote_mode",
+    "employment_type",
+    "experience",
+    "compensation",
+    "description",
+    "required_skills",
+    "preferred_skills",
+    "responsibilities",
+    "qualifications",
+    "posted_at",
+    "posted_at_raw",
+    "ingested_at",
+    "source_provenance",
+    "retention_class",
+    "fingerprint",
+    "flags"
+  ],
+  "type": "object"
+}

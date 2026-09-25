@@ -1,0 +1,256 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "capability_mode": {
+      "enum": [
+        "L0",
+        "L1",
+        "L2",
+        "L3",
+        "L4"
+      ],
+      "maxLength": 2,
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "1.0.0",
+      "type": "string"
+    },
+    "data": {
+      "anyOf": [
+        {},
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "error": {
+      "anyOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "capability_id": {
+              "type": "string"
+            },
+            "code": {
+              "enum": [
+                "INVALID_INPUT",
+                "INPUT_TOO_LARGE",
+                "NOT_FOUND",
+                "UNSAFE_URL",
+                "CONFLICT",
+                "CONFIRMATION_REQUIRED",
+                "CONFIRMATION_INVALID",
+                "CAPABILITY_DISABLED",
+                "BLOCKED_BY_PROVIDER_APPROVAL",
+                "POLICY_STALE",
+                "RATE_LIMITED",
+                "UNAUTHORIZED",
+                "FORBIDDEN",
+                "INTERNAL"
+              ],
+              "maxLength": 28,
+              "type": "string"
+            },
+            "message": {
+              "type": "string"
+            },
+            "remediation": {
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "retryable",
+            "remediation"
+          ],
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "human_action_required": {
+      "anyOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "actions": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "official_url": {
+              "anyOf": [
+                {
+                  "format": "uri",
+                  "pattern": "^https://",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "reason": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "reason",
+            "actions",
+            "official_url"
+          ],
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "meta": {
+      "additionalProperties": false,
+      "properties": {
+        "policy_snapshot_date": {
+          "format": "date",
+          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$",
+          "type": "string"
+        },
+        "request_id": {
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "type": "string"
+        },
+        "scoring_version": {
+          "type": "string"
+        },
+        "server": {
+          "enum": [
+            "naukri-mcp",
+            "indeed-mcp"
+          ],
+          "maxLength": 10,
+          "type": "string"
+        },
+        "server_version": {
+          "pattern": "^\\d+\\.\\d+\\.\\d+(?:-[\\w.-]+)?(?:\\+[\\w.-]+)?$",
+          "type": "string"
+        },
+        "tool": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "tool",
+        "request_id",
+        "server",
+        "server_version",
+        "policy_snapshot_date"
+      ],
+      "type": "object"
+    },
+    "provider": {
+      "enum": [
+        "naukri",
+        "indeed"
+      ],
+      "maxLength": 6,
+      "type": "string"
+    },
+    "source_provenance": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "captured_at": {
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+            "type": "string"
+          },
+          "detail": {
+            "maxLength": 200,
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "user_supplied",
+              "agent_relay",
+              "provider_api",
+              "derived"
+            ],
+            "maxLength": 13,
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "detail",
+          "captured_at"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "status": {
+      "enum": [
+        "ok",
+        "partial",
+        "error"
+      ],
+      "maxLength": 7,
+      "type": "string"
+    },
+    "warnings": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "enum": [
+              "UNTRUSTED_CONTENT",
+              "PROMPT_INJECTION_SUSPECTED",
+              "CONTENT_SANITIZED",
+              "POTENTIALLY_DISCRIMINATORY_REQUIREMENT",
+              "FIELD_UNPARSED",
+              "URL_NOT_OFFICIAL",
+              "DUPLICATE_SUSPECTED",
+              "OUTPUT_TRUNCATED",
+              "LOW_CONFIDENCE"
+            ],
+            "maxLength": 38,
+            "type": "string"
+          },
+          "field": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "contract_version",
+    "status",
+    "provider",
+    "capability_mode",
+    "source_provenance",
+    "data",
+    "warnings",
+    "human_action_required",
+    "error",
+    "meta"
+  ],
+  "type": "object"
+}

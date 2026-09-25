@@ -1,0 +1,12 @@
+{
+  "enum": [
+    "full_time",
+    "part_time",
+    "contract",
+    "internship",
+    "temporary",
+    "unknown"
+  ],
+  "maxLength": 10,
+  "type": "string"
+}

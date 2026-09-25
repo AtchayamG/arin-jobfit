@@ -1,0 +1,73 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "currency": {
+      "anyOf": [
+        {
+          "pattern": "^[A-Z]{3}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "disclosed": {
+      "type": "boolean"
+    },
+    "max": {
+      "anyOf": [
+        {
+          "maximum": 1000000000,
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "min": {
+      "anyOf": [
+        {
+          "maximum": 1000000000,
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "period": {
+      "enum": [
+        "year",
+        "month",
+        "hour",
+        "unknown"
+      ],
+      "maxLength": 7,
+      "type": "string"
+    },
+    "raw": {
+      "anyOf": [
+        {
+          "maxLength": 200,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "raw",
+    "currency",
+    "min",
+    "max",
+    "period",
+    "disclosed"
+  ],
+  "type": "object"
+}

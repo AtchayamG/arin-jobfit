@@ -12,7 +12,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --coverage",
     "build": "tsup",
-    "verify": "npm run lint && npm run typecheck && npm run test && npm run build"
+    "schemas:export": "tsx scripts/export-schemas.ts export",
+    "schemas:check": "tsx scripts/export-schemas.ts check",
+    "verify": "npm run lint && npm run typecheck && npm run test && npm run build && npm run schemas:check"
   },
   "dependencies": {
     "zod": "^4.0.0"

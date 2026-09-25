@@ -1,0 +1,10 @@
+{
+  "enum": [
+    "onsite",
+    "hybrid",
+    "remote",
+    "unknown"
+  ],
+  "maxLength": 7,
+  "type": "string"
+}

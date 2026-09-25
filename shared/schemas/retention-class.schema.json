@@ -1,0 +1,9 @@
+{
+  "enum": [
+    "session",
+    "standard_180d",
+    "pinned"
+  ],
+  "maxLength": 13,
+  "type": "string"
+}

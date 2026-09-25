@@ -1,0 +1,65 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "company": {
+      "maxLength": 200,
+      "type": "string"
+    },
+    "compensation_text": {
+      "maxLength": 200,
+      "type": "string"
+    },
+    "description": {
+      "maxLength": 50000,
+      "minLength": 1,
+      "type": "string"
+    },
+    "employment_type_text": {
+      "maxLength": 100,
+      "type": "string"
+    },
+    "experience_text": {
+      "maxLength": 100,
+      "type": "string"
+    },
+    "location": {
+      "maxLength": 200,
+      "type": "string"
+    },
+    "origin": {
+      "default": "user_paste",
+      "enum": [
+        "user_paste",
+        "agent_relay"
+      ],
+      "maxLength": 11,
+      "type": "string"
+    },
+    "posted_at_text": {
+      "maxLength": 100,
+      "type": "string"
+    },
+    "provider_job_id": {
+      "maxLength": 100,
+      "type": "string"
+    },
+    "relay_source": {
+      "maxLength": 100,
+      "type": "string"
+    },
+    "source_url": {
+      "maxLength": 2048,
+      "type": "string"
+    },
+    "title": {
+      "maxLength": 200,
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "description"
+  ],
+  "type": "object"
+}

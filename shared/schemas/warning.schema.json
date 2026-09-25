@@ -1,0 +1,31 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "code": {
+      "enum": [
+        "UNTRUSTED_CONTENT",
+        "PROMPT_INJECTION_SUSPECTED",
+        "CONTENT_SANITIZED",
+        "POTENTIALLY_DISCRIMINATORY_REQUIREMENT",
+        "FIELD_UNPARSED",
+        "URL_NOT_OFFICIAL",
+        "DUPLICATE_SUSPECTED",
+        "OUTPUT_TRUNCATED",
+        "LOW_CONFIDENCE"
+      ],
+      "maxLength": 38,
+      "type": "string"
+    },
+    "field": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "code",
+    "message"
+  ],
+  "type": "object"
+}

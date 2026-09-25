@@ -1,0 +1,44 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "capability_id": {
+      "type": "string"
+    },
+    "code": {
+      "enum": [
+        "INVALID_INPUT",
+        "INPUT_TOO_LARGE",
+        "NOT_FOUND",
+        "UNSAFE_URL",
+        "CONFLICT",
+        "CONFIRMATION_REQUIRED",
+        "CONFIRMATION_INVALID",
+        "CAPABILITY_DISABLED",
+        "BLOCKED_BY_PROVIDER_APPROVAL",
+        "POLICY_STALE",
+        "RATE_LIMITED",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "INTERNAL"
+      ],
+      "maxLength": 28,
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "remediation": {
+      "type": "string"
+    },
+    "retryable": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "code",
+    "message",
+    "retryable",
+    "remediation"
+  ],
+  "type": "object"
+}

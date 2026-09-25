@@ -1,0 +1,132 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "company": {
+      "anyOf": [
+        {
+          "maxLength": 200,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "compensation_disclosed": {
+      "type": "boolean"
+    },
+    "employment_type": {
+      "enum": [
+        "full_time",
+        "part_time",
+        "contract",
+        "internship",
+        "temporary",
+        "unknown"
+      ],
+      "maxLength": 10,
+      "type": "string"
+    },
+    "experience_max_years": {
+      "anyOf": [
+        {
+          "maximum": 60,
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "experience_min_years": {
+      "anyOf": [
+        {
+          "maximum": 60,
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "flag_count": {
+      "maximum": 50,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "ingested_at": {
+      "format": "date-time",
+      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+      "type": "string"
+    },
+    "job_id": {
+      "pattern": "^job_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "location_raw": {
+      "anyOf": [
+        {
+          "maxLength": 200,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "provider": {
+      "enum": [
+        "naukri",
+        "indeed"
+      ],
+      "maxLength": 6,
+      "type": "string"
+    },
+    "remote_mode": {
+      "enum": [
+        "onsite",
+        "hybrid",
+        "remote",
+        "unknown"
+      ],
+      "maxLength": 7,
+      "type": "string"
+    },
+    "retention_class": {
+      "enum": [
+        "session",
+        "standard_180d",
+        "pinned"
+      ],
+      "maxLength": 13,
+      "type": "string"
+    },
+    "source_url_is_official": {
+      "type": "boolean"
+    },
+    "title": {
+      "maxLength": 200,
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "required": [
+    "job_id",
+    "provider",
+    "title",
+    "company",
+    "remote_mode",
+    "employment_type",
+    "ingested_at",
+    "retention_class",
+    "source_url_is_official",
+    "location_raw",
+    "experience_min_years",
+    "experience_max_years",
+    "compensation_disclosed",
+    "flag_count"
+  ],
+  "type": "object"
+}

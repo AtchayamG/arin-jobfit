@@ -1,0 +1,8 @@
+{
+  "enum": [
+    "naukri",
+    "indeed"
+  ],
+  "maxLength": 6,
+  "type": "string"
+}

@@ -1,0 +1,334 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "certifications": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "issuer": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "name": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "maximum": 2100,
+                "minimum": 1900,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "issuer",
+          "year"
+        ],
+        "type": "object"
+      },
+      "maxItems": 50,
+      "type": "array"
+    },
+    "created_at": {
+      "format": "date-time",
+      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+      "type": "string"
+    },
+    "education": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "institution": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          "qualification": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "maximum": 2100,
+                "minimum": 1900,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "qualification",
+          "institution",
+          "year"
+        ],
+        "type": "object"
+      },
+      "maxItems": 20,
+      "type": "array"
+    },
+    "headline": {
+      "maxLength": 300,
+      "type": "string"
+    },
+    "label": {
+      "maxLength": 100,
+      "minLength": 1,
+      "type": "string"
+    },
+    "preferences": {
+      "additionalProperties": false,
+      "properties": {
+        "deal_breakers": {
+          "items": {
+            "maxLength": 500,
+            "type": "string"
+          },
+          "maxItems": 20,
+          "type": "array"
+        },
+        "employment_types": {
+          "items": {
+            "enum": [
+              "full_time",
+              "part_time",
+              "contract",
+              "internship",
+              "temporary",
+              "unknown"
+            ],
+            "maxLength": 10,
+            "type": "string"
+          },
+          "maxItems": 6,
+          "type": "array"
+        },
+        "locations": {
+          "items": {
+            "maxLength": 200,
+            "type": "string"
+          },
+          "maxItems": 50,
+          "type": "array"
+        },
+        "min_compensation": {
+          "anyOf": [
+            {
+              "additionalProperties": false,
+              "properties": {
+                "amount": {
+                  "maximum": 1000000000,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                "currency": {
+                  "maxLength": 3,
+                  "minLength": 3,
+                  "type": "string"
+                },
+                "period": {
+                  "enum": [
+                    "year",
+                    "month",
+                    "hour"
+                  ],
+                  "maxLength": 5,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "amount",
+                "currency",
+                "period"
+              ],
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "remote_modes": {
+          "items": {
+            "enum": [
+              "onsite",
+              "hybrid",
+              "remote",
+              "unknown"
+            ],
+            "maxLength": 7,
+            "type": "string"
+          },
+          "maxItems": 4,
+          "type": "array"
+        }
+      },
+      "required": [
+        "locations",
+        "remote_modes",
+        "employment_types",
+        "deal_breakers",
+        "min_compensation"
+      ],
+      "type": "object"
+    },
+    "profile_id": {
+      "pattern": "^prof_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "roles": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "company": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          "end": {
+            "maxLength": 7,
+            "minLength": 7,
+            "type": "string"
+          },
+          "highlights": {
+            "items": {
+              "maxLength": 500,
+              "type": "string"
+            },
+            "maxItems": 20,
+            "type": "array"
+          },
+          "start": {
+            "maxLength": 7,
+            "minLength": 7,
+            "type": "string"
+          },
+          "title": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "company",
+          "start",
+          "end",
+          "highlights"
+        ],
+        "type": "object"
+      },
+      "maxItems": 50,
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1",
+      "type": "string"
+    },
+    "skills": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "level": {
+            "anyOf": [
+              {
+                "enum": [
+                  "beginner",
+                  "intermediate",
+                  "advanced",
+                  "expert"
+                ],
+                "maxLength": 12,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "name": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "years": {
+            "anyOf": [
+              {
+                "maximum": 60,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "years",
+          "level"
+        ],
+        "type": "object"
+      },
+      "maxItems": 200,
+      "type": "array"
+    },
+    "summary_text": {
+      "anyOf": [
+        {
+          "maxLength": 20000,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "total_experience_years": {
+      "maximum": 60,
+      "minimum": 0,
+      "type": "number"
+    },
+    "updated_at": {
+      "format": "date-time",
+      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "profile_id",
+    "schema_version",
+    "created_at",
+    "updated_at",
+    "label",
+    "headline",
+    "total_experience_years",
+    "skills",
+    "roles",
+    "education",
+    "certifications",
+    "preferences",
+    "summary_text"
+  ],
+  "type": "object"
+}

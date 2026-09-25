@@ -1,0 +1,11 @@
+{
+  "enum": [
+    "L0",
+    "L1",
+    "L2",
+    "L3",
+    "L4"
+  ],
+  "maxLength": 2,
+  "type": "string"
+}

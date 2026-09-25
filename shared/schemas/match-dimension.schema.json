@@ -1,0 +1,70 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "evidence": {
+      "items": {
+        "maxLength": 500,
+        "type": "string"
+      },
+      "maxItems": 20,
+      "type": "array"
+    },
+    "gaps": {
+      "items": {
+        "maxLength": 500,
+        "type": "string"
+      },
+      "maxItems": 20,
+      "type": "array"
+    },
+    "name": {
+      "enum": [
+        "must_have_skills",
+        "experience",
+        "preferred_skills",
+        "seniority",
+        "location_remote",
+        "employment_type",
+        "domain"
+      ],
+      "maxLength": 16,
+      "type": "string"
+    },
+    "score": {
+      "anyOf": [
+        {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "status": {
+      "enum": [
+        "matched",
+        "partial",
+        "missing",
+        "unknown"
+      ],
+      "maxLength": 7,
+      "type": "string"
+    },
+    "weight": {
+      "maximum": 1,
+      "minimum": 0,
+      "type": "number"
+    }
+  },
+  "required": [
+    "name",
+    "weight",
+    "score",
+    "status",
+    "evidence",
+    "gaps"
+  ],
+  "type": "object"
+}
