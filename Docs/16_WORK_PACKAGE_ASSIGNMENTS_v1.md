@@ -16,7 +16,7 @@ Rule: Codex and AGY never own the same file in the same period. A WP may only mo
 | WP-SH-005 | **AGY** (reassigned 2026-09-25) | STANDARD | P1 | SH-001 | fit-v1 matching, explain, shortlist, dedupe | planned |
 | WP-SH-006 | AGY | STANDARD | P1 | SH-003 | CV-notes, interview, handoff builders + truthfulness invariant | **READY (pulled forward)** |
 | WP-SH-007 | **AGY** (reassigned 2026-09-25) | STANDARD | P1 | SH-001 | store interfaces, node:sqlite impl, migrations, retention, audit, export/purge | planned |
-| WP-SH-008 | Codex | HIGH | P2 | SH-002..007 ✅, BCP-001/002 ✅ — **READY** | MCP tool-kit on SDK v2: tool defs, handlers, pipeline, result mapping | planned |
+| WP-SH-008 | Codex (finalized by AGY) | HIGH | P2 | **PASS** | MCP tool-kit on SDK v2: tool defs, handlers, pipeline, result mapping | planned |
 | WP-NK-001 | Codex | STANDARD | P2 | SH-008 | naukri-mcp product: config, stdio entry, bundle, client install docs | planned |
 | WP-IN-001 | AGY | STANDARD | P2 | SH-008 | indeed-mcp product: same, independent | planned |
 | WP-QA-001 | Codex | STANDARD | P3 | NK-001, IN-001 | stdio integration + contract tests via SDK client | planned |
@@ -603,6 +603,52 @@ Do not change any exported function signature; Codex is integrating against them
 6. Raise branch coverage of `src/extract` to ≥ 90% (currently 83%).
 
 **Commit:** `WP-SH-010: SH-003 review fixes`. Scoped tests, lint and prettier must be green.
+
+## 3H. WP-NK-001 (Codex) / WP-IN-001 (AGY) — Product packages over stdio (STANDARD) — issued 2026-09-25 after Review 3
+
+One spec covers both products. `{P}` = `naukri` / `indeed`; `{PM}` = `naukri-mcp` / `indeed-mcp`; `{ENV}` = `NAUKRI_MCP_DATA_DIR` / `INDEED_MCP_DATA_DIR`; `{HOSTS}` = `NAUKRI_HOSTS` / `INDEED_HOSTS`. Codex builds naukri-mcp and AGY builds indeed-mcp **independently**. Neither reads or copies the other's product folder (T-12).
+
+**Owns:** `{PM}/**` only: `package.json`, `package-lock.json`, `tsconfig.json`, `tsup.config.ts`, `vitest.config.ts`, `eslint.config.js`, `.prettierrc.json`, `src/**`, `tests/**`, `docs/**`, `README.md`, and `config/policy.json` (read-only; content unchanged). Plus `Docs/handovers/WP-{NK|IN}-001.md`.
+
+**Must not touch:** `shared/**` (job-core is frozen for this wave). If a job-core change is required, STOP and report it.
+
+**Requirements:**
+
+1. **Consuming job-core.** No `file:` dependency and no job-core edit. Alias `@jpm/job-core` → `../shared/job-core/src/index.ts` in tsconfig `paths`, the tsup/esbuild `alias` and the vitest `resolve.alias`. Prerequisite: `npm ci` in `shared/job-core` (esbuild resolves job-core's own dependencies from its `node_modules`).
+2. **Bundle.** tsup → `dist/index.js`: ESM, platform node, target node22, `noExternal: [/.*/]` (everything bundled; `node:` built-ins stay external), with a shebang. **The dist must run from a directory containing no node_modules** (tested). Version is injected from `package.json` at build time.
+3. **Entry `src/index.ts`:**
+   - Install a warning filter **before** dynamically importing job-core. It drops only `ExperimentalWarning`s whose message mentions SQLite; all other warnings go to stderr.
+   - `--version` / `--help` print to stdout and exit 0. Any other argument → stderr usage message, exit 2.
+   - Load the policy from the bundled `config/policy.json` (JSON import, **never read from disk at runtime**; T-03) via `loadPolicy(json, new Date())`. On failure: stderr message, exit 1.
+   - Resolve the data dir with `resolveDataDir({envValue: process.env[{ENV}], product: "{PM}", platform, home, appData, xdgDataHome})`. Invalid → exit 1.
+   - `openStore` → `runStdio({serverName: "{PM}", serverVersion, provider: "{P}", policy, hostAllowlist: {HOSTS}, store})`.
+   - Graceful shutdown on SIGINT, SIGTERM or stdin end: `store.close()`, exit 0.
+   - **Nothing is written to stdout except MCP protocol frames** (and the `--version`/`--help` output).
+4. **Scripts:** `lint`, `typecheck`, `test`, `build`, `policy:lint` (`tsx ../shared/job-core/scripts/policy-lint.ts config/policy.json ../Docs/09_DECISIONS_LOG.md`), and `verify` = all of these. Dev dependencies only: TypeScript/vitest/eslint/prettier/tsup/tsx at the **same caret versions as job-core**, plus `@modelcontextprotocol/client` for the e2e test. No runtime dependencies are listed; everything is bundled.
+5. **E2E test** `tests/stdio.e2e.test.ts` (run after build) spawns `node dist/index.js` with `{ENV}` set to a temp dir, using the SDK `StdioClientTransport`. It checks:
+   1. `tools/list` returns exactly 22 tools in alphabetical order.
+   2. `provider_capabilities` shows L1+ as `blocked_by_provider_approval`.
+   3. `jobs_ingest` with a synthetic `{P}`-style JD (written by you) returns `ok` with `UNTRUSTED_CONTENT`.
+   4. A hostile JD returns `PROMPT_INJECTION_SUSPECTED`.
+   5. `jobs_compare_profile` with an inline profile returns a schema-valid `MatchResult`.
+   6. `jobs_application_handoff` with an official `{P}` URL → `url_is_official: true`, `human_action_required` present, and `human_only_fields` includes `final_submit`.
+   7. The `data_purge` two-step flow.
+   - Plus: stderr contains no "ExperimentalWarning"; the data file exists at `<tmp>/{PM}.sqlite3`; `--version` prints the package version.
+   - A second test copies `dist/index.js` to a fresh temp dir with no node_modules and runs `--version` successfully.
+   - An isolation test statically scans `src/**` for any reference to the other product's name or env var.
+6. **Docs:**
+   - `README.md`:
+     - what it is
+     - the independent-product disclaimer
+     - local-only privacy: data location, retention, `data_export`/`data_purge`
+     - build steps (Windows PowerShell and POSIX)
+     - the tool list, pointing to `shared/contracts/tool-manifest.v1.json`
+     - human-control boundary
+   - For indeed-mcp only: the BCP-003 positioning. It complements Indeed's official MCP, with an agent-relay usage example using `origin: "agent_relay"`, `relay_source: "indeed_official_mcp"`. It never calls Indeed.
+   - `docs/clients/`: `claude-code.md` (`claude mcp add` and project `.mcp.json`), `codex.md` (`~/.codex/config.toml` `[mcp_servers.{PM}]`), `gemini-cli.md` (`settings.json` `mcpServers`), `kimi-code.md`. Mark each **"UNVERIFIED — to be confirmed in WP-CMP-001"**, and link the official docs listed in `Docs/12_RESEARCH_SOURCES.md`. Include Windows paths.
+7. Files ≤ 250 lines. No `any`, no console except in the entry's `--help`/`--version` and stderr error paths.
+
+**Acceptance:** from a clean clone, run `cd shared/job-core && npm ci`, then `cd ../../{PM} && npm ci && npm run verify`, all green. `npm audit --omit=dev` shows 0. Commits: checkpoint(s), then `WP-{NK|IN}-001: {PM} product over stdio`.
 
 ## 4. Handover format (mandatory for every WP)
 
