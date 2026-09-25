@@ -4,7 +4,11 @@ import { installWarningFilter } from "./warnings.js";
 
 export { installWarningFilter };
 
-const PACKAGE_VERSION: string = process.env.PACKAGE_VERSION ?? "0.1.0";
+const PACKAGE_VERSION: string = process.env.PACKAGE_VERSION ?? "0.1.1";
+const usage = `Arin JobFit — Indeed edition
+Independent; not affiliated with Indeed.
+Data directory override: INDEED_MCP_DATA_DIR
+Usage: arin-jobfit-id [--version | --help]`;
 
 function handleCliArgs(): void {
   const args = process.argv.slice(2);
@@ -13,22 +17,11 @@ function handleCliArgs(): void {
     process.exit(0);
   }
   if (args.includes("--help") || args.includes("-h")) {
-    console.log(`Arin JobFit — Indeed edition
-Independent; not affiliated with Indeed.
-Data directory override: INDEED_MCP_DATA_DIR
-
-Usage: arin-jobfit-id [options]
-Usage: indeed-mcp [options]
-
-Local, privacy-first MCP server for job-description analysis.
-
-Options:
-  -v, --version  Show version number
-  -h, --help     Show help`);
+    console.log(usage);
     process.exit(0);
   }
   if (args.length > 0) {
-    process.stderr.write(`Unknown argument(s): ${args.join(" ")}\nUsage: indeed-mcp [options]\n`);
+    process.stderr.write(`Unknown argument(s): ${args.join(" ")}\n${usage}\n`);
     process.exit(2);
   }
 }

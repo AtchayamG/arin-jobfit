@@ -200,12 +200,12 @@ describe("indeed-mcp stdio E2E suite", () => {
   describe("CLI arguments and standalone bundle", () => {
     it("prints package version on --version", () => {
       const output = execFileSync("node", [distPath, "--version"], { encoding: "utf-8" }).trim();
-      expect(output).toBe("0.1.0");
+      expect(output).toBe("0.1.1");
     });
 
     it("prints usage instructions on --help", () => {
       const output = execFileSync("node", [distPath, "--help"], { encoding: "utf-8" });
-      expect(output).toContain("Usage: indeed-mcp");
+      expect(output).toContain("Usage: arin-jobfit-id [--version | --help]");
     });
 
     it("exits with code 2 on unknown arguments", () => {
@@ -215,7 +215,7 @@ describe("indeed-mcp stdio E2E suite", () => {
       } catch (err) {
         const error = err as { status: number; stderr: string };
         expect(error.status).toBe(2);
-        expect(error.stderr).toContain("Unknown argument(s)");
+        expect(error.stderr).toContain("Usage: arin-jobfit-id [--version | --help]");
       }
     });
 
@@ -227,7 +227,7 @@ describe("indeed-mcp stdio E2E suite", () => {
         const output = execFileSync("node", [copiedDist, "--version"], {
           encoding: "utf-8",
         }).trim();
-        expect(output).toBe("0.1.0");
+        expect(output).toBe("0.1.1");
       } finally {
         fs.rmSync(freshTmp, { recursive: true, force: true });
       }

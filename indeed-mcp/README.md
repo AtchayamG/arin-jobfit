@@ -1,5 +1,10 @@
 # Arin JobFit — Indeed edition
 
+[![arin-jobfit-nk on npm](https://img.shields.io/npm/v/arin-jobfit-nk)](https://www.npmjs.com/package/arin-jobfit-nk)
+[![arin-jobfit-id on npm](https://img.shields.io/npm/v/arin-jobfit-id)](https://www.npmjs.com/package/arin-jobfit-id)
+[![CI](https://github.com/AtchayamG/arin-jobfit/actions/workflows/ci.yml/badge.svg)](https://github.com/AtchayamG/arin-jobfit/actions/workflows/ci.yml)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](../LICENSE)
+
 > **Notice:** `indeed-mcp` is an internal engineering working name (BCP-004). It is an independent open-source project and is **not** affiliated with, endorsed by, sponsored by, or an official product of Indeed, Inc. "Indeed" is a registered trademark of Indeed, Inc.
 
 `arin-jobfit-id` is a local, privacy-first Model Context Protocol (MCP) server running over standard I/O (`stdio`). It provides structured job analysis, requirement extraction, candidate-job match scoring (`fit-v1`), truthful CV notes preparation, interview planning, and human-controlled application handoff for jobs sourced from Indeed.
@@ -9,6 +14,22 @@
 ```sh
 npx -y arin-jobfit-id
 ```
+
+Claude Code:
+
+```sh
+claude mcp add -s user arin-jobfit-id -- npx -y arin-jobfit-id
+```
+
+Codex (`~/.codex/config.toml` or `%USERPROFILE%\\.codex\\config.toml`):
+
+```toml
+[mcp_servers.arin-jobfit-id]
+command = "npx"
+args = ["-y", "arin-jobfit-id"]
+```
+
+On Windows, use `npx.cmd` for `command`.
 
 ## Build from source
 

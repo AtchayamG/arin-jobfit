@@ -169,7 +169,7 @@ describe("Naukri stdio package", () => {
   it("prints its version and runs the copied entry without node_modules", async () => {
     const result = spawnSync(process.execPath, [executable, "--version"], { encoding: "utf8" });
     expect(result.status).toBe(0);
-    expect(result.stdout.trim()).toBe("0.1.0");
+    expect(result.stdout.trim()).toBe("0.1.1");
     const isolated = await mkdtemp(join(tmpdir(), "naukri-mcp-bundle-"));
     cleanup.push(isolated);
     await copyFile(executable, join(isolated, "index.js"));
@@ -177,7 +177,15 @@ describe("Naukri stdio package", () => {
       encoding: "utf8",
     });
     expect(isolatedResult.status).toBe(0);
-    expect(isolatedResult.stdout.trim()).toBe("0.1.0");
+    expect(isolatedResult.stdout.trim()).toBe("0.1.1");
     expect(await readdir(isolated)).toEqual(["index.js"]);
+  });
+
+  it("prints the product usage line for unknown arguments", () => {
+    const result = spawnSync(process.execPath, [executable, "--unknown-flag"], {
+      encoding: "utf8",
+    });
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain("Usage: arin-jobfit-nk [--version | --help]");
   });
 });

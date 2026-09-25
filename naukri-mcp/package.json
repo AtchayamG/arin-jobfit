@@ -1,6 +1,6 @@
 {
   "name": "arin-jobfit-nk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Arin JobFit (Naukri edition) — local, privacy-first MCP server for job-description analysis. Independent; not affiliated with Naukri or Info Edge.",
   "license": "Apache-2.0",
   "type": "module",
@@ -17,7 +17,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/AtchayamG/arin-jobfit"
+    "url": "git+https://github.com/AtchayamG/arin-jobfit.git"
   },
   "homepage": "https://github.com/AtchayamG/arin-jobfit#readme",
   "bugs": {

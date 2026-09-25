@@ -1,5 +1,10 @@
 # Arin JobFit
 
+[![arin-jobfit-nk on npm](https://img.shields.io/npm/v/arin-jobfit-nk)](https://www.npmjs.com/package/arin-jobfit-nk)
+[![arin-jobfit-id on npm](https://img.shields.io/npm/v/arin-jobfit-id)](https://www.npmjs.com/package/arin-jobfit-id)
+[![CI](https://github.com/AtchayamG/arin-jobfit/actions/workflows/ci.yml/badge.svg)](https://github.com/AtchayamG/arin-jobfit/actions/workflows/ci.yml)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+
 Arin JobFit is a pair of local MCP servers that turn a pasted job description
 into an explainable fit score, gaps, truthful CV notes, interview preparation,
 and a human-only application handoff. The servers do not submit applications.
@@ -26,6 +31,32 @@ After publication:
 npx -y arin-jobfit-nk
 npx -y arin-jobfit-id
 ```
+
+Claude Code, Naukri edition:
+
+```sh
+claude mcp add -s user arin-jobfit-nk -- npx -y arin-jobfit-nk
+```
+
+Claude Code, Indeed edition:
+
+```sh
+claude mcp add -s user arin-jobfit-id -- npx -y arin-jobfit-id
+```
+
+Codex (`~/.codex/config.toml` or `%USERPROFILE%\\.codex\\config.toml`):
+
+```toml
+[mcp_servers.arin-jobfit-nk]
+command = "npx"
+args = ["-y", "arin-jobfit-nk"]
+
+[mcp_servers.arin-jobfit-id]
+command = "npx"
+args = ["-y", "arin-jobfit-id"]
+```
+
+On Windows, use `npx.cmd` for both `command` values.
 
 Client setup guides are available for [Claude Code](naukri-mcp/docs/clients/claude-code.md),
 [Codex](naukri-mcp/docs/clients/codex.md), [Gemini CLI](naukri-mcp/docs/clients/gemini-cli.md),
