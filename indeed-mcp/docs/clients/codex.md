@@ -1,33 +1,26 @@
-# OpenAI Codex CLI MCP Integration
+# Codex
 
-> **Status:** UNVERIFIED — to be confirmed in WP-CMP-001
+Official documentation: [OpenAI Codex MCP](https://developers.openai.com/learn/docs-mcp).
 
-Documentation reference: [OpenAI Codex MCP Documentation](https://developers.openai.com/learn/docs-mcp)
+Add one of these entries to `%USERPROFILE%\.codex\config.toml` on Windows or
+`~/.codex/config.toml` on POSIX.
 
----
-
-## Configuration (`~/.codex/config.toml`)
-
-To register `indeed-mcp` with OpenAI Codex CLI, edit your user configuration file located at `~/.codex/config.toml` (or `%USERPROFILE%\.codex\config.toml` on Windows).
-
-### Windows Configuration
+Published package, POSIX:
 
 ```toml
-[mcp_servers.indeed-mcp]
-command = "node"
-args = ["D:\\Work\\Codex\\Job-Portal-MCPs\\indeed-mcp\\dist\\index.js"]
-
-[mcp_servers.indeed-mcp.env]
-INDEED_MCP_DATA_DIR = "C:\\Users\\User\\AppData\\Roaming\\indeed-mcp"
+[mcp_servers.arin-jobfit-id]
+command = "npx"
+args = ["-y", "arin-jobfit-id"]
 ```
 
-### POSIX Configuration (Linux / macOS)
+Published package, Windows:
 
 ```toml
-[mcp_servers.indeed-mcp]
-command = "node"
-args = ["/home/user/Work/Job-Portal-MCPs/indeed-mcp/dist/index.js"]
-
-[mcp_servers.indeed-mcp.env]
-INDEED_MCP_DATA_DIR = "/home/user/.local/share/indeed-mcp"
+[mcp_servers.arin-jobfit-id]
+command = "npx.cmd"
+args = ["-y", "arin-jobfit-id"]
 ```
+
+From source, use `command = "node"` and `args = ["/path/to/Job-Portal-MCPs/indeed-mcp/dist/index.js"]`
+on POSIX, or `args = ["C:\\Users\\<user>\\Job-Portal-MCPs\\indeed-mcp\\dist\\index.js"]`
+on Windows. The optional data directory override is `INDEED_MCP_DATA_DIR`.

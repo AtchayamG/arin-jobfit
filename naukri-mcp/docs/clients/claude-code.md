@@ -1,24 +1,25 @@
 # Claude Code
 
-UNVERIFIED — to be confirmed in WP-CMP-001.
-
 Official documentation: [Claude Code CLI MCP](https://docs.anthropic.com/en/docs/claude-code/cli-usage).
 
-Example command:
+## Published package
+
+POSIX:
 
 ```sh
-claude mcp add naukri-mcp -- "C:\Users\<user>\Job-Portal-MCPs\naukri-mcp\dist\index.js"
+claude mcp add arin-jobfit-nk -- npx -y arin-jobfit-nk
 ```
 
-Project `.mcp.json` example:
+Windows PowerShell:
 
-```json
-{
-  "mcpServers": {
-    "naukri-mcp": {
-      "command": "node",
-      "args": ["C:\\Users\\<user>\\Job-Portal-MCPs\\naukri-mcp\\dist\\index.js"]
-    }
-  }
-}
+```powershell
+claude mcp add arin-jobfit-nk -- npx.cmd -y arin-jobfit-nk
 ```
+
+## From source
+
+POSIX: `claude mcp add arin-jobfit-nk -- node /path/to/Job-Portal-MCPs/naukri-mcp/dist/index.js`
+
+Windows PowerShell: `claude mcp add arin-jobfit-nk -- node C:\Users\<user>\Job-Portal-MCPs\naukri-mcp\dist\index.js`
+
+The optional data directory override is `NAUKRI_MCP_DATA_DIR`.

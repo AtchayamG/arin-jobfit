@@ -5,7 +5,10 @@ import policyJson from "../config/policy.json" with { type: "json" };
 declare const __PACKAGE_VERSION__: string;
 
 const version = __PACKAGE_VERSION__;
-const usage = "Usage: naukri-mcp [--version | --help]";
+const usage = `Arin JobFit — Naukri edition
+Independent; not affiliated with Naukri or Info Edge.
+Data directory override: NAUKRI_MCP_DATA_DIR
+Usage: arin-jobfit-nk [--version | --help]`;
 
 async function main(): Promise<void> {
   const argument = process.argv[2];

@@ -1,43 +1,23 @@
-# Gemini CLI MCP Integration
+# Gemini CLI
 
-> **Status:** UNVERIFIED — to be confirmed in WP-CMP-001
+UNVERIFIED — community verification pending.
 
-Documentation reference: [Gemini CLI MCP Server Documentation](https://github.com/google-gemini/gemini-cli/blob/main/docs/tools/mcp-server.md)
+Official documentation: [Gemini CLI MCP](https://github.com/google-gemini/gemini-cli/blob/main/docs/tools/mcp-server.md).
 
----
-
-## Configuration (`settings.json`)
-
-To configure `indeed-mcp` with Gemini CLI, add the server specification under `mcpServers` in your Gemini CLI `settings.json` file.
-
-### Windows Configuration
+Add this to `~/.gemini/settings.json` (Windows: `%USERPROFILE%\.gemini\settings.json`).
+Use `npx` on POSIX and `npx.cmd` on Windows:
 
 ```json
 {
   "mcpServers": {
-    "indeed-mcp": {
-      "command": "node",
-      "args": ["D:\\Work\\Codex\\Job-Portal-MCPs\\indeed-mcp\\dist\\index.js"],
-      "env": {
-        "INDEED_MCP_DATA_DIR": "%APPDATA%\\indeed-mcp"
-      }
+    "arin-jobfit-id": {
+      "command": "npx",
+      "args": ["-y", "arin-jobfit-id"]
     }
   }
 }
 ```
 
-### POSIX Configuration (Linux / macOS)
-
-```json
-{
-  "mcpServers": {
-    "indeed-mcp": {
-      "command": "node",
-      "args": ["/home/user/Work/Job-Portal-MCPs/indeed-mcp/dist/index.js"],
-      "env": {
-        "INDEED_MCP_DATA_DIR": "/home/user/.local/share/indeed-mcp"
-      }
-    }
-  }
-}
-```
+On Windows, change `command` to `npx.cmd`. From source, use `command: "node"`
+and the edition's `dist/index.js` path. The optional data directory override is
+`INDEED_MCP_DATA_DIR`.

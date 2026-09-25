@@ -1,8 +1,16 @@
-# indeed-mcp
+# Arin JobFit — Indeed edition
 
 > **Notice:** `indeed-mcp` is an internal engineering working name (BCP-004). It is an independent open-source project and is **not** affiliated with, endorsed by, sponsored by, or an official product of Indeed, Inc. "Indeed" is a registered trademark of Indeed, Inc.
 
-`indeed-mcp` is a local, privacy-first Model Context Protocol (MCP) server running over standard I/O (`stdio`). It provides structured job analysis, requirement extraction, candidate-job match scoring (`fit-v1`), truthful CV notes preparation, interview planning, and human-controlled application handoff for jobs sourced from Indeed.
+`arin-jobfit-id` is a local, privacy-first Model Context Protocol (MCP) server running over standard I/O (`stdio`). It provides structured job analysis, requirement extraction, candidate-job match scoring (`fit-v1`), truthful CV notes preparation, interview planning, and human-controlled application handoff for jobs sourced from Indeed.
+
+## Install after publication
+
+```sh
+npx -y arin-jobfit-id
+```
+
+## Build from source
 
 ---
 

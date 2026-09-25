@@ -1,4 +1,4 @@
-# Naukri MCP
+# Arin JobFit — Naukri edition
 
 An independent, local-first MCP server for organizing and analyzing user-provided job information. It is not affiliated with, endorsed by, or operated by Naukri or Info Edge.
 
@@ -9,6 +9,14 @@ Data is stored only on this device in SQLite. The default location is `%APPDATA%
 ## Tools
 
 The server exposes the 22 tools in the shared [tool manifest](../shared/contracts/tool-manifest.v1.json).
+
+## Install after publication
+
+```sh
+npx -y arin-jobfit-nk
+```
+
+## Build from source
 
 ## Build
 

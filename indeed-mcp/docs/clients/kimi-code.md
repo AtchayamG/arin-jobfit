@@ -1,43 +1,11 @@
-# Kimi Code CLI MCP Integration
+# Kimi Code
 
-> **Status:** UNVERIFIED — to be confirmed in WP-CMP-001
+UNVERIFIED — community verification pending.
 
-Documentation reference: [Kimi Code MCP Documentation](https://www.kimi.com/code/docs/en/kimi-code-cli/customization/mcp.html)
+Official documentation: [Kimi Code MCP](https://www.kimi.com/code/docs/en/kimi-code-cli/customization/mcp.html).
 
----
-
-## Configuration (`mcp.json`)
-
-To register `indeed-mcp` with Kimi Code CLI, add the server to your Kimi configuration file (e.g., `~/.kimi/mcp.json` or project-level configuration).
-
-### Windows Configuration
-
-```json
-{
-  "mcpServers": {
-    "indeed-mcp": {
-      "command": "node",
-      "args": ["D:\\Work\\Codex\\Job-Portal-MCPs\\indeed-mcp\\dist\\index.js"],
-      "env": {
-        "INDEED_MCP_DATA_DIR": "%APPDATA%\\indeed-mcp"
-      }
-    }
-  }
-}
-```
-
-### POSIX Configuration (Linux / macOS)
-
-```json
-{
-  "mcpServers": {
-    "indeed-mcp": {
-      "command": "node",
-      "args": ["/home/user/Work/Job-Portal-MCPs/indeed-mcp/dist/index.js"],
-      "env": {
-        "INDEED_MCP_DATA_DIR": "/home/user/.local/share/indeed-mcp"
-      }
-    }
-  }
-}
-```
+Configure a stdio server in the Kimi Code MCP configuration. Published package:
+use command `npx` with arguments `-y arin-jobfit-id` on POSIX, or command
+`npx.cmd` with the same arguments on Windows. From source, use command `node`
+and `C:\Users\<user>\Job-Portal-MCPs\indeed-mcp\dist\index.js` (or the equivalent
+POSIX path). The optional data directory override is `INDEED_MCP_DATA_DIR`.

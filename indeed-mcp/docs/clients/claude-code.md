@@ -1,61 +1,25 @@
-# Claude Code MCP Integration
+# Claude Code
 
-> **Status:** UNVERIFIED — to be confirmed in WP-CMP-001
+Official documentation: [Claude Code CLI MCP](https://docs.anthropic.com/en/docs/claude-code/cli-usage).
 
-Documentation reference: [Claude Code CLI Documentation](https://docs.anthropic.com/en/docs/claude-code/cli-usage) | [Anthropic MCP](https://docs.anthropic.com/en/docs/mcp)
+## Published package
 
----
+POSIX:
 
-## Adding `indeed-mcp` to Claude Code
-
-You can add `indeed-mcp` to Claude Code globally via the CLI or locally via a project `.mcp.json` file.
-
-### CLI Command
-
-```bash
-# POSIX (Linux / macOS)
-claude mcp add indeed-mcp -- node /path/to/indeed-mcp/dist/index.js
+```sh
+claude mcp add arin-jobfit-id -- npx -y arin-jobfit-id
 ```
+
+Windows PowerShell:
 
 ```powershell
-# Windows (PowerShell)
-claude mcp add indeed-mcp -- node D:\Work\Codex\Job-Portal-MCPs\indeed-mcp\dist\index.js
+claude mcp add arin-jobfit-id -- npx.cmd -y arin-jobfit-id
 ```
 
----
+## From source
 
-## Project Configuration (`.mcp.json`)
+POSIX: `claude mcp add arin-jobfit-id -- node /path/to/Job-Portal-MCPs/indeed-mcp/dist/index.js`
 
-To configure `indeed-mcp` for a specific repository or workspace, create or edit `.mcp.json` at the project root:
+Windows PowerShell: `claude mcp add arin-jobfit-id -- node C:\Users\<user>\Job-Portal-MCPs\indeed-mcp\dist\index.js`
 
-### Windows Configuration
-
-```json
-{
-  "mcpServers": {
-    "indeed-mcp": {
-      "command": "node",
-      "args": ["D:\\Work\\Codex\\Job-Portal-MCPs\\indeed-mcp\\dist\\index.js"],
-      "env": {
-        "INDEED_MCP_DATA_DIR": "%APPDATA%\\indeed-mcp"
-      }
-    }
-  }
-}
-```
-
-### POSIX Configuration (Linux / macOS)
-
-```json
-{
-  "mcpServers": {
-    "indeed-mcp": {
-      "command": "node",
-      "args": ["/path/to/Job-Portal-MCPs/indeed-mcp/dist/index.js"],
-      "env": {
-        "INDEED_MCP_DATA_DIR": "/home/user/.local/share/indeed-mcp"
-      }
-    }
-  }
-}
-```
+The optional data directory override is `INDEED_MCP_DATA_DIR`.

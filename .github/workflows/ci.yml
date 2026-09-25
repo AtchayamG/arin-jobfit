@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    name: Verify (${{ matrix.os }}, Node ${{ matrix.node }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node: [22, 24]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+          cache-dependency-path: |
+            shared/job-core/package-lock.json
+            naukri-mcp/package-lock.json
+            indeed-mcp/package-lock.json
+      - name: Verify job-core
+        working-directory: shared/job-core
+        run: npm ci
+      - name: Run job-core checks
+        working-directory: shared/job-core
+        run: npm run verify
+      - name: Verify Naukri edition
+        working-directory: naukri-mcp
+        run: npm ci
+      - name: Run Naukri checks
+        working-directory: naukri-mcp
+        run: npm run verify
+      - name: Audit Naukri production dependencies
+        working-directory: naukri-mcp
+        run: npm audit --omit=dev --audit-level=high
+      - name: Verify Indeed edition
+        working-directory: indeed-mcp
+        run: npm ci
+      - name: Run Indeed checks
+        working-directory: indeed-mcp
+        run: npm run verify
+      - name: Audit Indeed production dependencies
+        working-directory: indeed-mcp
+        run: npm audit --omit=dev --audit-level=high
+
+  gitleaks:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

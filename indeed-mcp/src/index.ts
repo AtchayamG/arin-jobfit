@@ -13,9 +13,14 @@ function handleCliArgs(): void {
     process.exit(0);
   }
   if (args.includes("--help") || args.includes("-h")) {
-    console.log(`Usage: indeed-mcp [options]
+    console.log(`Arin JobFit — Indeed edition
+Independent; not affiliated with Indeed.
+Data directory override: INDEED_MCP_DATA_DIR
 
-Privacy-preserving MCP server for Indeed job search and analysis.
+Usage: arin-jobfit-id [options]
+Usage: indeed-mcp [options]
+
+Local, privacy-first MCP server for job-description analysis.
 
 Options:
   -v, --version  Show version number

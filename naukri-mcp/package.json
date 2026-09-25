@@ -1,14 +1,33 @@
 {
-  "name": "@jpm/naukri-mcp",
+  "name": "arin-jobfit-nk",
   "version": "0.1.0",
-  "private": true,
+  "description": "Arin JobFit (Naukri edition) — local, privacy-first MCP server for job-description analysis. Independent; not affiliated with Naukri or Info Edge.",
+  "license": "Apache-2.0",
   "type": "module",
   "engines": {
     "node": ">=22.13"
   },
   "bin": {
-    "naukri-mcp": "dist/index.js"
+    "arin-jobfit-nk": "dist/index.js"
   },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/<OWNER>/arin-jobfit"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "job-search",
+    "resume",
+    "ai-agents",
+    "claude",
+    "codex"
+  ],
   "scripts": {
     "lint": "eslint src tests scripts && prettier --check src tests scripts package.json package-lock.json tsconfig.json tsup.config.ts vitest.config.ts eslint.config.js .prettierrc.json README.md docs",
     "format": "prettier --write src tests scripts package.json tsconfig.json tsup.config.ts vitest.config.ts eslint.config.js .prettierrc.json README.md docs",
@@ -16,7 +35,8 @@
     "test": "vitest run",
     "build": "tsup && tsx scripts/restore-sqlite-builtin.ts",
     "policy:lint": "tsx ../shared/job-core/scripts/policy-lint.ts config/policy.json ../Docs/09_DECISIONS_LOG.md",
-    "verify": "npm run lint && npm run typecheck && npm run build && npm run test && npm run policy:lint"
+    "verify": "npm run lint && npm run typecheck && npm run build && npm run test && npm run policy:lint",
+    "prepublishOnly": "npm run verify"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

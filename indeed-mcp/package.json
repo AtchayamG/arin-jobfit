@@ -1,15 +1,29 @@
 {
-  "name": "indeed-mcp",
+  "name": "arin-jobfit-id",
   "version": "0.1.0",
-  "description": "Privacy-preserving MCP server for Indeed job search and analysis",
+  "description": "Arin JobFit (Indeed edition) — local, privacy-first MCP server for job-description analysis. Independent; not affiliated with Indeed.",
+  "license": "Apache-2.0",
   "type": "module",
   "bin": {
-    "indeed-mcp": "./dist/index.js"
+    "arin-jobfit-id": "dist/index.js"
   },
   "files": [
     "dist",
     "README.md",
-    "config/policy.json"
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/<OWNER>/arin-jobfit"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "job-search",
+    "resume",
+    "ai-agents",
+    "claude",
+    "codex"
   ],
   "engines": {
     "node": ">=22.13"
@@ -21,7 +35,8 @@
     "test": "vitest run",
     "build": "tsup",
     "policy:lint": "tsx ../shared/job-core/scripts/policy-lint.ts config/policy.json ../Docs/09_DECISIONS_LOG.md",
-    "verify": "npm run lint && npm run typecheck && npm run policy:lint && npm run build && npm run test"
+    "verify": "npm run lint && npm run typecheck && npm run policy:lint && npm run build && npm run test",
+    "prepublishOnly": "npm run verify"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
