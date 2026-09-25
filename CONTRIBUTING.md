@@ -2,13 +2,16 @@
 
 ## Development setup
 
-Use Node.js 22.13 or newer and npm 10 or newer. Install and verify each
-package independently:
+Use Node.js 22.13 or newer and npm 10 or newer. Install and verify job-core,
+build both products (cross-product isolation tests require both distributions
+to exist), then run each product's verification:
 
 ```sh
 cd shared/job-core && npm ci && npm run verify
-cd ../../naukri-mcp && npm ci && npm run verify
-cd ../indeed-mcp && npm ci && npm run verify
+cd ../../naukri-mcp && npm ci && npm run build
+cd ../indeed-mcp && npm ci && npm run build
+cd ../naukri-mcp && npm run verify
+cd ../indeed-mcp && npm run verify
 ```
 
 On Windows PowerShell, use `npm.cmd` if execution policy blocks `npm.ps1`.

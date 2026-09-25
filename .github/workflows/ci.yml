@@ -29,18 +29,24 @@ jobs:
       - name: Run job-core checks
         working-directory: shared/job-core
         run: npm run verify
-      - name: Verify Naukri edition
+      - name: Install Naukri edition
         working-directory: naukri-mcp
         run: npm ci
+      - name: Build Naukri edition
+        working-directory: naukri-mcp
+        run: npm run build
+      - name: Install Indeed edition
+        working-directory: indeed-mcp
+        run: npm ci
+      - name: Build Indeed edition
+        working-directory: indeed-mcp
+        run: npm run build
       - name: Run Naukri checks
         working-directory: naukri-mcp
         run: npm run verify
       - name: Audit Naukri production dependencies
         working-directory: naukri-mcp
         run: npm audit --omit=dev --audit-level=high
-      - name: Verify Indeed edition
-        working-directory: indeed-mcp
-        run: npm ci
       - name: Run Indeed checks
         working-directory: indeed-mcp
         run: npm run verify

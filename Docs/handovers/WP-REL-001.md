@@ -43,3 +43,10 @@ and tests were preserved. Package LICENSE files are committed copies of root.
 ## COMMIT
 
 To be recorded after explicit-path staging: `WP-REL-001: Arin JobFit release packaging (Apache-2.0, CI, docs)`
+
+## R-1 FIX (R-13)
+
+- **Issue**: `naukri-mcp/tests/security/isolation-cross-product.test.ts` failed on fresh clone when `indeed-mcp` was not yet built.
+- **ci.yml**: Updated build order so `shared/job-core` installs/verifies, then both `naukri-mcp` and `indeed-mcp` run `npm ci && npm run build` before each product runs `npm run verify` and audit.
+- **isolation-cross-product.test.ts**: Added `beforeAll` checking `../indeed-mcp/dist/index.js` exists, throwing clear error if missing: `"Cross-product isolation test requires indeed-mcp to be built first: cd indeed-mcp && npm ci && npm run build"`.
+- **CONTRIBUTING.md**: Documented development setup order: `job-core` → build both products → verify.

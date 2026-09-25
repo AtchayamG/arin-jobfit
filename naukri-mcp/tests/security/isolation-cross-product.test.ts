@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { Client } from "@modelcontextprotocol/client";
 import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import {
   JD_IN_01,
   JD_NK_01,
@@ -26,6 +26,14 @@ function asEnvelope<T = Record<string, unknown>>(res: {
 }
 
 describe("T-12: Cross-product isolation (naukri-mcp vs indeed-mcp)", () => {
+  beforeAll(() => {
+    if (!fs.existsSync(indeedDistPath)) {
+      throw new Error(
+        "Cross-product isolation test requires indeed-mcp to be built first: cd indeed-mcp && npm ci && npm run build",
+      );
+    }
+  });
+
   it("runs naukri-mcp and indeed-mcp with the same parent data directory in total isolation", async () => {
     // Both products pointed to the exact SAME parent directory
     const sharedParentDir = fs.mkdtempSync(path.join(os.tmpdir(), "jpm-cross-isolation-"));
