@@ -1,0 +1,20 @@
+{
+  "provider": "indeed",
+  "input": {
+    "title": "Healthcare Data Analyst",
+    "location": "Toronto, Canada",
+    "experience_text": "at least 3 years",
+    "compensation_text": "$25 an hour",
+    "description": "Requirements:\n- Python and SQL\n- Work authorization required\n- Persons with disabilities need not apply\nPreferred:\n- Pandas\nResponsibilities:\n- Analyze clinical data"
+  },
+  "expected": {
+    "required_skills": ["Python", "SQL"],
+    "preferred_skills": ["Pandas"],
+    "experience": [3, null],
+    "compensation": [25, 25, "USD", "hour"],
+    "country": "CA",
+    "posted_at": null,
+    "constraints": ["work_authorization"],
+    "discriminatory_flags": ["disability"]
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "provider": "indeed",
+  "input": {
+    "title": "Senior API Engineer",
+    "location": "Remote, United States",
+    "experience_text": "5+ years",
+    "compensation_text": "$120,000 - $150,000 a year",
+    "posted_at_text": "25 Sep 2026",
+    "description": "Job details:\nFull Time, Permanent\nRequirements:\n- Node.js and TypeScript required\nNice to have:\n- React\nWhat you'll do:\n- Design APIs"
+  },
+  "expected": {
+    "required_skills": ["Node.js", "TypeScript"],
+    "preferred_skills": ["React"],
+    "experience": [5, null],
+    "compensation": [120000, 150000, "USD", "year"],
+    "country": "US",
+    "posted_at": "2026-09-25T00:00:00.000Z",
+    "constraints": [],
+    "discriminatory_flags": []
+  }
+}

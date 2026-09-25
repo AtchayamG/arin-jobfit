@@ -1,0 +1,22 @@
+{
+  "provider": "naukri",
+  "input": {
+    "title": "Backend Engineer",
+    "company": "Example Systems",
+    "location": "Bengaluru, India",
+    "experience_text": "5 - 10 Yrs",
+    "compensation_text": "₹ 12-18 Lacs P.A.",
+    "posted_at_text": "25/09/2026",
+    "description": "Qualifications:\n- B.Tech degree in computer science\nKey Skills: Python, SQL\nPreferred:\n- Docker\nResponsibilities:\n- Build reliable services\n- Male only applicants"
+  },
+  "expected": {
+    "required_skills": ["Python", "SQL"],
+    "preferred_skills": ["Docker"],
+    "experience": [5, 10],
+    "compensation": [1200000, 1800000, "INR", "year"],
+    "country": "IN",
+    "posted_at": "2026-09-25T00:00:00.000Z",
+    "constraints": ["education"],
+    "discriminatory_flags": ["gender"]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "provider": "naukri",
+  "input": {
+    "title": "Platform Developer",
+    "location": "Delhi/NCR, India",
+    "experience_text": "minimum 5 years",
+    "compensation_text": "1.2 Cr",
+    "description": "Requirements:\n- C# and .NET required\n- Travel to regional offices\nGood to have:\n- React\nResponsibilities:\n- Support production systems\n- Locals only"
+  },
+  "expected": {
+    "required_skills": ["C#", ".NET"],
+    "preferred_skills": ["React"],
+    "experience": [5, null],
+    "compensation": [12000000, 12000000, "INR", "year"],
+    "country": "IN",
+    "posted_at": null,
+    "constraints": ["travel"],
+    "discriminatory_flags": ["nationality_origin"]
+  }
+}

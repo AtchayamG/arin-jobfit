@@ -1,0 +1,21 @@
+{
+  "provider": "indeed",
+  "input": {
+    "title": "DevOps Specialist",
+    "location": "Hybrid, Kolkata, India",
+    "experience_text": "2-4 years",
+    "compensation_text": "$30,000 - $45,000 a month",
+    "posted_at_text": "Just posted",
+    "description": "Requirements:\n- CI/CD and AWS required\n- Night shift\n- Minimum height 170 cm\nBonus:\n- Kubernetes\nResponsibilities:\n- Improve deployments"
+  },
+  "expected": {
+    "required_skills": ["CI/CD", "AWS"],
+    "preferred_skills": ["Kubernetes"],
+    "experience": [2, 4],
+    "compensation": [30000, 45000, "USD", "month"],
+    "country": "IN",
+    "posted_at": null,
+    "constraints": ["shift"],
+    "discriminatory_flags": ["appearance"]
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "provider": "naukri",
+  "input": {
+    "title": "Cloud Trainee",
+    "location": "Remote, India",
+    "experience_text": "fresher",
+    "compensation_text": "Not Disclosed",
+    "posted_at_text": "3 days ago",
+    "description": "Desired Candidate Profile:\n- Go and Kubernetes knowledge\n- Immediate joiner\nNice to have:\n- Terraform\nRoles and Responsibilities:\n- Maintain cloud infrastructure"
+  },
+  "expected": {
+    "required_skills": ["Go", "Kubernetes"],
+    "preferred_skills": ["Terraform"],
+    "experience": [0, 1],
+    "compensation": [null, null, null, "unknown"],
+    "country": "IN",
+    "posted_at": null,
+    "constraints": ["notice_period"],
+    "discriminatory_flags": []
+  }
+}
