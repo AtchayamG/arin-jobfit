@@ -1,6 +1,6 @@
 import type { Job, JobInput, Provenance, ProviderId, Warning } from "../schemas/index.js";
 import { parseEmploymentType, parseRemoteMode } from "./classify.js";
-import { parseCompensation } from "./compensation.js";
+import { extractCompensationFragment, parseCompensation } from "./compensation.js";
 import { parseExperience } from "./experience.js";
 import { fingerprintJob } from "./fingerprint.js";
 import { parseLocation } from "./location.js";
@@ -15,14 +15,18 @@ export interface NormalizeContext {
   provenance: Provenance[];
 }
 
-const payLine = (text: string, provider: ProviderId): string | undefined =>
-  text
+const payLine = (text: string, provider: ProviderId): string | undefined => {
+  const fragment = extractCompensationFragment(text);
+  if (fragment) return fragment;
+  const line = text
     .split(/\r?\n/)
-    .find((line) =>
-      /[₹$]|\b(?:salary|compensation|pay|lakh|crore)\b/i.test(
-        canonicalCompensationText(provider, line),
+    .find((l) =>
+      /[₹$]|\b(?:salary|compensation|pay|lakh|crore|lpa|ctc)\b/i.test(
+        canonicalCompensationText(provider, l),
       ),
     );
+  return line ? line.slice(0, 200) : undefined;
+};
 
 export function normalizeJob(
   input: JobInput,
@@ -34,6 +38,9 @@ export function normalizeJob(
     ctx.provider,
   );
   const posted = parsePostedAt(input.posted_at_text, ctx.provider);
+  const locRemote = parseRemoteMode(input.location ?? "").value;
+  const descRemote = parseRemoteMode(input.description).value;
+  const remote_mode = locRemote !== "unknown" ? locRemote : descRemote;
   const warnings = [
     ...(input.experience_text && experience.warning ? [experience.warning] : []),
     ...(input.compensation_text && compensation.warning ? [compensation.warning] : []),
@@ -48,7 +55,7 @@ export function normalizeJob(
     title: input.title,
     company: input.company ?? null,
     location: parseLocation(input.location).value,
-    remote_mode: parseRemoteMode(`${input.location ?? ""}\n${input.description}`).value,
+    remote_mode,
     employment_type: parseEmploymentType(
       `${input.employment_type_text ?? ""}\n${input.description}`,
     ).value,

@@ -9,15 +9,13 @@ export function canonicalExperienceText(provider: ProviderId, text: string): str
 }
 
 export function canonicalCompensationText(provider: ProviderId, text: string): string {
-  if (provider === "naukri") {
-    return text
-      .replace(/\blacs?\s*p\.?\s*a\.?\b/gi, "lakh per year")
-      .replace(/\blpa\b/gi, "lakh per year")
-      .replace(/\bcr\b/gi, "crore")
-      .replace(/\bnot disclosed\b/gi, "undisclosed");
-  }
-  return text
+  const result = text
+    .replace(/\blacs?\s*p\.?\s*a\.?\b/gi, "lakh per year")
+    .replace(/\blpa\b/gi, "lakh per year")
+    .replace(/\bcr\b/gi, "crore")
+    .replace(/\bnot disclosed\b/gi, "undisclosed")
     .replace(/\ba year\b/gi, "per year")
     .replace(/\ba month\b/gi, "per month")
     .replace(/\ban hour\b/gi, "per hour");
+  return result;
 }

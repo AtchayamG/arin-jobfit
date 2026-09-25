@@ -128,6 +128,39 @@ export function calculateSeniority(job: Job, profile: Profile): MatchDimension {
   return { name: "seniority", weight: 0.1, score, status, evidence, gaps };
 }
 
+const CITY_SYNONYMS: Readonly<Record<string, string>> = {
+  bangalore: "bengaluru",
+  bengaluru: "bengaluru",
+  gurgaon: "gurugram",
+  gurugram: "gurugram",
+  calcutta: "kolkata",
+  kolkata: "kolkata",
+  bombay: "mumbai",
+  mumbai: "mumbai",
+  madras: "chennai",
+  chennai: "chennai",
+  mysore: "mysuru",
+  mysuru: "mysuru",
+  cochin: "kochi",
+  kochi: "kochi",
+  trivandrum: "thiruvananthapuram",
+  thiruvananthapuram: "thiruvananthapuram",
+  baroda: "vadodara",
+  vadodara: "vadodara",
+};
+
+export function canonicalCity(raw: string | null | undefined): string {
+  if (!raw) return "";
+  const cleaned = raw
+    .trim()
+    .toLowerCase()
+    .replace(/\s*\([^)]*\)/g, "")
+    .replace(/\s*[-/|–—].*$/, "")
+    .replace(/[.,]/g, "")
+    .trim();
+  return CITY_SYNONYMS[cleaned] ?? cleaned;
+}
+
 export function calculateLocationRemote(job: Job, profile: Profile): MatchDimension {
   const hasProfileLoc = profile.preferences.locations.length > 0;
   const hasProfileRemote = profile.preferences.remote_modes.length > 0;
@@ -145,15 +178,15 @@ export function calculateLocationRemote(job: Job, profile: Profile): MatchDimens
     };
   }
 
+  const jobCityNorm = canonicalCity(job.location.city);
+  const cityMatched =
+    jobCityNorm.length > 0 &&
+    profile.preferences.locations.some((loc) => canonicalCity(loc) === jobCityNorm);
+
   let score = 0;
   if (job.remote_mode === "remote" && profile.preferences.remote_modes.includes("remote")) {
     score = 1;
-  } else if (
-    hasJobCity &&
-    profile.preferences.locations.some(
-      (loc) => loc.trim().toLowerCase() === job.location.city?.trim().toLowerCase(),
-    )
-  ) {
+  } else if (cityMatched) {
     score = 1;
   } else if (isJobRemoteKnown && profile.preferences.remote_modes.includes(job.remote_mode)) {
     score = 0.5;

@@ -1,0 +1,65 @@
+{
+  "provider": "indeed",
+  "input": {
+    "title": "Senior Angular Developer",
+    "company": "Acme Fintech",
+    "location": "Chennai (Hybrid)",
+    "source_url": "https://www.indeed.com/viewjob?jk=abc123",
+    "description": "Requirements: 6+ years Angular, TypeScript, RxJS, REST APIs. Good to have: Ionic, Capacitor, AWS. Salary 18-25 LPA. Full time."
+  },
+  "expected": {
+    "required_skills": ["Angular", "TypeScript", "RxJS", "REST"],
+    "preferred_skills": ["Ionic", "Capacitor", "AWS"],
+    "experience": [6, null],
+    "compensation": [1800000, 2500000, "INR", "year"],
+    "country": "IN",
+    "posted_at": null,
+    "constraints": [],
+    "discriminatory_flags": []
+  },
+  "profile": {
+    "profile_id": "prof_00000000-0000-4000-8000-000000000003",
+    "schema_version": "1",
+    "created_at": "2026-09-01T00:00:00Z",
+    "updated_at": "2026-09-25T00:00:00Z",
+    "label": "Senior Angular Developer Profile",
+    "headline": "Senior Angular Developer with 13 years of experience",
+    "total_experience_years": 13,
+    "skills": [
+      { "name": "Angular", "years": 8, "level": "expert" },
+      { "name": "TypeScript", "years": 8, "level": "expert" },
+      { "name": "Ionic", "years": 5, "level": "advanced" },
+      { "name": "Capacitor", "years": 4, "level": "advanced" },
+      { "name": "Cordova", "years": 6, "level": "advanced" },
+      { "name": "Flutter", "years": 3, "level": "intermediate" }
+    ],
+    "roles": [
+      {
+        "title": "Principal Consultant",
+        "company": "Hyperblitz",
+        "start": "2025-05",
+        "end": "present",
+        "highlights": [
+          "Delivered cross-platform enterprise mobile and web applications with Angular, Ionic, and Capacitor",
+          "Architected frontend modular structures with TypeScript and Cordova"
+        ]
+      }
+    ],
+    "education": [
+      {
+        "qualification": "B.E. in Computer Science",
+        "institution": "Anna University",
+        "year": 2013
+      }
+    ],
+    "certifications": [],
+    "preferences": {
+      "locations": ["Chennai"],
+      "remote_modes": ["hybrid"],
+      "employment_types": ["full_time"],
+      "deal_breakers": [],
+      "min_compensation": null
+    },
+    "summary_text": "Senior Angular Developer with 13 years of experience in cross-platform mobile and web applications."
+  }
+}

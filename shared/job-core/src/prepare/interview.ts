@@ -25,143 +25,128 @@ export function buildInterviewPlan(
 ): InterviewPlan {
   const topics: InterviewTopic[] = [];
 
-  // Phase 1: Matched must-have requirements
+  const seenSkills = new Set<string>();
+
+  // Phase 1: Matched must-have requirements (one topic per skill)
   for (const req of requirements.must_have) {
-    if (req.skills.length === 0) continue;
-
-    const matchedSkills: string[] = [];
     for (const skill of req.skills) {
+      const skillKey = skill.toLowerCase();
+      if (seenSkills.has(skillKey)) continue;
+
       if (findSkillEvidence(profile, skill, 1).length > 0) {
-        matchedSkills.push(skill);
-      }
-    }
-
-    if (matchedSkills.length > 0) {
-      const primarySkill = matchedSkills[0] as string;
-      topics.push({
-        topic: truncateText(`Must-Have: ${matchedSkills.join(", ")}`, 200),
-        source: "jd",
-        requirement_ref: truncateText(req.text, 500),
-        question_seeds: [
-          truncateText(
-            `How have you applied ${primarySkill} in your recent production projects?`,
-            300,
-          ),
-          truncateText(
-            `Describe an architectural challenge or technical trade-off you faced working with ${primarySkill}.`,
-            300,
-          ),
-          truncateText(
-            `How do you handle testing, performance optimization, and debugging in ${primarySkill}?`,
-            300,
-          ),
-        ],
-        study_pointers: [
-          truncateText(
-            `Review system design and production trade-offs involving ${primarySkill}.`,
-            300,
-          ),
-          truncateText(
-            `Prepare concrete quantifiable metrics demonstrating business impact using ${primarySkill}.`,
-            300,
-          ),
-          truncateText(
-            `Refresh fundamental concurrency, memory, and performance characteristics in ${primarySkill}.`,
-            300,
-          ),
-        ],
-      });
-    }
-  }
-
-  // Phase 2: Must-have gaps
-  for (const req of requirements.must_have) {
-    if (req.skills.length === 0) continue;
-
-    const missingSkills: string[] = [];
-    for (const skill of req.skills) {
-      if (findSkillEvidence(profile, skill, 1).length === 0) {
-        missingSkills.push(skill);
-      }
-    }
-
-    for (const missingSkill of missingSkills) {
-      topics.push({
-        topic: truncateText(`Skill Gap: ${missingSkill}`, 200),
-        source: "gap",
-        requirement_ref: truncateText(req.text, 500),
-        question_seeds: [
-          truncateText(
-            `What is your exposure to ${missingSkill}, and how would you ramp up quickly?`,
-            300,
-          ),
-          truncateText(
-            `Which analogous tools or technologies have you used that relate to ${missingSkill}?`,
-            300,
-          ),
-        ],
-        study_pointers: [
-          truncateText(`prepare a truthful account of your exposure to ${missingSkill}`, 300),
-          truncateText(
-            `Identify transferable concepts from familiar technologies that accelerate learning ${missingSkill}.`,
-            300,
-          ),
-          truncateText(
-            `Review standard reference manuals and core architectural concepts of ${missingSkill}.`,
-            300,
-          ),
-        ],
-      });
-    }
-  }
-
-  // Phase 3: Preferred requirements
-  for (const req of requirements.preferred) {
-    if (req.skills.length === 0) continue;
-
-    const matchedSkills: string[] = [];
-    for (const skill of req.skills) {
-      if (findSkillEvidence(profile, skill, 1).length > 0) {
-        matchedSkills.push(skill);
-      }
-    }
-
-    const primarySkill = req.skills[0] as string;
-    const hasMatch = matchedSkills.length > 0;
-
-    topics.push({
-      topic: truncateText(`Preferred: ${req.skills.join(", ")}`, 200),
-      source: hasMatch ? "jd" : "gap",
-      requirement_ref: truncateText(req.text, 500),
-      question_seeds: [
-        truncateText(
-          `How does your experience with ${primarySkill} complement the primary requirements of this role?`,
-          300,
-        ),
-        truncateText(
-          `Can you provide an example where knowledge of ${primarySkill} improved system delivery?`,
-          300,
-        ),
-      ],
-      study_pointers: hasMatch
-        ? [
+        seenSkills.add(skillKey);
+        topics.push({
+          topic: truncateText(`Must-Have: ${skill}`, 200),
+          source: "jd",
+          requirement_ref: truncateText(req.text, 500),
+          question_seeds: [
+            truncateText(`How have you applied ${skill} in your recent production projects?`, 300),
             truncateText(
-              `Prepare specific examples of how you leveraged ${primarySkill} in previous initiatives.`,
+              `Describe an architectural challenge or technical trade-off you faced working with ${skill}.`,
               300,
             ),
             truncateText(
-              `Highlight how familiarity with ${primarySkill} shortens onboarding time.`,
-              300,
-            ),
-          ]
-        : [
-            truncateText(`prepare a truthful account of your exposure to ${primarySkill}`, 300),
-            truncateText(
-              `Review foundational use cases and high-level architecture for ${primarySkill}.`,
+              `How do you handle testing, performance optimization, and debugging in ${skill}?`,
               300,
             ),
           ],
-    });
+          study_pointers: [
+            truncateText(`Review system design and production trade-offs involving ${skill}.`, 300),
+            truncateText(
+              `Prepare concrete quantifiable metrics demonstrating business impact using ${skill}.`,
+              300,
+            ),
+            truncateText(
+              `Refresh fundamental concurrency, memory, and performance characteristics in ${skill}.`,
+              300,
+            ),
+          ],
+        });
+      }
+    }
+  }
+
+  // Phase 2: Must-have gaps (one topic per missing skill)
+  for (const req of requirements.must_have) {
+    for (const skill of req.skills) {
+      const skillKey = skill.toLowerCase();
+      if (seenSkills.has(skillKey)) continue;
+
+      if (findSkillEvidence(profile, skill, 1).length === 0) {
+        seenSkills.add(skillKey);
+        topics.push({
+          topic: truncateText(`Skill Gap: ${skill}`, 200),
+          source: "gap",
+          requirement_ref: truncateText(req.text, 500),
+          question_seeds: [
+            truncateText(
+              `What is your exposure to ${skill}, and how would you ramp up quickly?`,
+              300,
+            ),
+            truncateText(
+              `Which analogous tools or technologies have you used that relate to ${skill}?`,
+              300,
+            ),
+          ],
+          study_pointers: [
+            truncateText(`prepare a truthful account of your exposure to ${skill}`, 300),
+            truncateText(
+              `Identify transferable concepts from familiar technologies that accelerate learning ${skill}.`,
+              300,
+            ),
+            truncateText(
+              `Review standard reference manuals and core architectural concepts of ${skill}.`,
+              300,
+            ),
+          ],
+        });
+      }
+    }
+  }
+
+  // Phase 3: Preferred requirements (one topic per skill)
+  for (const req of requirements.preferred) {
+    for (const skill of req.skills) {
+      const skillKey = skill.toLowerCase();
+      if (seenSkills.has(skillKey)) continue;
+      seenSkills.add(skillKey);
+
+      const hasMatch = findSkillEvidence(profile, skill, 1).length > 0;
+
+      topics.push({
+        topic: truncateText(`Preferred: ${skill}`, 200),
+        source: hasMatch ? "jd" : "gap",
+        requirement_ref: truncateText(req.text, 500),
+        question_seeds: [
+          truncateText(
+            `How does your experience with ${skill} complement the primary requirements of this role?`,
+            300,
+          ),
+          truncateText(
+            `Can you provide an example where knowledge of ${skill} improved system delivery?`,
+            300,
+          ),
+        ],
+        study_pointers: hasMatch
+          ? [
+              truncateText(
+                `Prepare specific examples of how you leveraged ${skill} in previous initiatives.`,
+                300,
+              ),
+              truncateText(
+                `Highlight how familiarity with ${skill} shortens onboarding time.`,
+                300,
+              ),
+            ]
+          : [
+              truncateText(`prepare a truthful account of your exposure to ${skill}`, 300),
+              truncateText(
+                `Review foundational use cases and high-level architecture for ${skill}.`,
+                300,
+              ),
+            ],
+      });
+    }
   }
 
   // Phase 4: Top 5 responsibilities

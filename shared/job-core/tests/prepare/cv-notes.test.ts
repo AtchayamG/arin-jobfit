@@ -39,8 +39,11 @@ describe("buildCvNotes", () => {
     expect(parsed.gaps.some((g) => g.missing_skills.includes("Kubernetes"))).toBe(true);
     expect(parsed.gaps.some((g) => g.missing_skills.includes("GraphQL"))).toBe(true);
 
-    // All must-have skills are matched for senior, so do_not_claim should not contain must-haves
-    expect(parsed.do_not_claim).toEqual([]);
+    // Preferred gaps (Kubernetes, GraphQL) have no evidence, so they are added to do_not_claim
+    expect(parsed.do_not_claim).toEqual([
+      "No evidence in profile for Kubernetes; do not claim it.",
+      "No evidence in profile for GraphQL; do not claim it.",
+    ]);
   });
 
   it("supports 'inline' as profile_ref", () => {
@@ -49,7 +52,7 @@ describe("buildCvNotes", () => {
     expect(() => cvNotesSchema.parse(res)).not.toThrow();
   });
 
-  it("identifies gaps and populates do_not_claim for missing required skills", () => {
+  it("identifies gaps and populates do_not_claim for missing required and preferred skills", () => {
     const res = buildCvNotes(job, requirements, juniorProfile, juniorProfile.profile_id);
     const parsed = cvNotesSchema.parse(res);
 
@@ -63,9 +66,9 @@ describe("buildCvNotes", () => {
     );
     expect(parsed.do_not_claim).toContain("No evidence in profile for Docker; do not claim it.");
 
-    // Preferred missing skills are gaps, but NOT in do_not_claim
+    // Preferred missing skills are also added to do_not_claim per Fix 5 truthfulness invariant
     expect(parsed.gaps.some((g) => g.missing_skills.includes("Kubernetes"))).toBe(true);
-    expect(parsed.do_not_claim).not.toContain(
+    expect(parsed.do_not_claim).toContain(
       "No evidence in profile for Kubernetes; do not claim it.",
     );
   });

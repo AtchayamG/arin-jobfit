@@ -79,11 +79,26 @@ const containsPhrase = (text: string, phrase: string): boolean => {
   return false;
 };
 
+function cleanCity(rawCity: string): string | null {
+  const stripped = rawCity
+    .replace(/\s*\([^)]*\)/g, "")
+    .replace(
+      /\s*[-/|–—]\s*(?:hybrid|remote|onsite|on-site|wfh|work from home|work from office|full[ -]?time|part[ -]?time)\b.*$/i,
+      "",
+    )
+    .replace(/\s+\b(?:hybrid|remote|onsite|on-site|wfh)\b.*$/i, "")
+    .trim();
+  if (/^(?:remote|hybrid|onsite|on-site|wfh|anywhere|unspecified)$/i.test(stripped)) {
+    return null;
+  }
+  return stripped.slice(0, 100) || null;
+}
+
 export function parseLocation(raw: string | undefined): Parsed<Location> {
   if (!raw?.trim()) return { value: { raw: null, city: null, country: null } };
   const text = raw.trim();
   const first = text.split(",", 1)[0]?.trim() ?? "";
-  const city = /^(remote|hybrid)$/i.test(first) ? null : first.slice(0, 100) || null;
+  const city = cleanCity(first);
   const lower = text.toLowerCase();
   const explicit = countries.find(([name]) => containsPhrase(lower, name))?.[1];
   const country =

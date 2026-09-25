@@ -32,7 +32,7 @@ export function buildCvNotes(
   const emphasize: EmphasizeItem[] = [];
   const gaps: GapItem[] = [];
   const unassessed: string[] = [];
-  const requiredMissingSkills = new Set<string>();
+  const missingSkillsWithNoEvidence = new Set<string>();
 
   // Process must_have requirements
   for (const req of requirements.must_have) {
@@ -49,7 +49,7 @@ export function buildCvNotes(
       const evidence = findSkillEvidence(profile, skill, 5);
       if (evidence.length === 0) {
         missingSkills.push(skill);
-        requiredMissingSkills.add(skill);
+        missingSkillsWithNoEvidence.add(skill);
       } else {
         for (const item of evidence) {
           if (!seenPaths.has(item.field_path)) {
@@ -92,6 +92,7 @@ export function buildCvNotes(
       const evidence = findSkillEvidence(profile, skill, 5);
       if (evidence.length === 0) {
         missingSkills.push(skill);
+        missingSkillsWithNoEvidence.add(skill);
       } else {
         for (const item of evidence) {
           if (!seenPaths.has(item.field_path)) {
@@ -119,17 +120,17 @@ export function buildCvNotes(
     }
   }
 
-  // Check top-level required_skills from Job for any missing skills
-  for (const skill of job.required_skills) {
+  // Check top-level required_skills and preferred_skills from Job for any missing skills
+  for (const skill of [...job.required_skills, ...job.preferred_skills]) {
     const evidence = findSkillEvidence(profile, skill, 1);
     if (evidence.length === 0) {
-      requiredMissingSkills.add(skill);
+      missingSkillsWithNoEvidence.add(skill);
     }
   }
 
-  // Build do_not_claim list for required skills with no evidence
+  // Build do_not_claim list for all job skills with no evidence
   const do_not_claim: string[] = [];
-  for (const skill of requiredMissingSkills) {
+  for (const skill of missingSkillsWithNoEvidence) {
     do_not_claim.push(`No evidence in profile for ${skill}; do not claim it.`);
   }
 
