@@ -58,4 +58,5 @@ export interface EditionResult {
   };
   defects: Array<{ id: string; severity: string; description: string; repro: string }>;
   knownLimitations: string[];
+  schemaValidationCount: number;
 }
