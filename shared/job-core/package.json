@@ -1,0 +1,32 @@
+{
+  "name": "@jpm/job-core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "lint": "eslint src tests && prettier --check .",
+    "format": "prettier --write .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --coverage",
+    "build": "tsup",
+    "verify": "npm run lint && npm run typecheck && npm run test && npm run build"
+  },
+  "dependencies": {
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "latest",
+    "@types/node": "latest",
+    "@vitest/coverage-v8": "latest",
+    "eslint": "latest",
+    "prettier": "latest",
+    "tsup": "latest",
+    "tsx": "latest",
+    "typescript": "latest",
+    "typescript-eslint": "latest",
+    "vitest": "latest"
+  }
+}
