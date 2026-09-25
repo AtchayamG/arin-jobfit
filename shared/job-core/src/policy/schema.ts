@@ -42,7 +42,8 @@ export function isFutureDate(dateStr: string, now: Date): boolean {
   const day = Number(parts[2]);
   const snapTime = Date.UTC(year, month - 1, day);
   const nowDayTime = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
-  return snapTime > nowDayTime;
+  // Allow +1 day tolerance for timezone differences (e.g. IST midnight vs UTC)
+  return snapTime - nowDayTime > 86400000;
 }
 
 export const policyCapabilitySchema = z

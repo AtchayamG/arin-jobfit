@@ -91,8 +91,24 @@ describe("WP-SH-002: Policy Loader and Schema", () => {
     expect(() => loadPolicy(rawCalendar, baseNow)).toThrow(PolicyError);
   });
 
-  it("throws PolicyError if snapshot_date is in the future", () => {
-    const rawFuture = createValidPolicy({ snapshot_date: "2026-09-26" });
-    expect(() => loadPolicy(rawFuture, baseNow)).toThrow(PolicyError);
+  it("accepts snapshot_date with +1 day tolerance for timezone offset (R-4)", () => {
+    // baseNow is 2026-09-25T12:00:00Z. Snapshot 2026-09-26 is +1 day ahead, allowed.
+    const rawPlusOne = createValidPolicy({ snapshot_date: "2026-09-26" });
+    const policy = loadPolicy(rawPlusOne, baseNow);
+    expect(policy.snapshot_date).toBe("2026-09-26");
+  });
+
+  it("accepts policy when evaluated at IST 00:30 on snapshot day (R-4)", () => {
+    // 00:30 IST on 2026-09-25 is 2026-09-24T19:00:00.000Z in UTC
+    const istEarlyMorning = new Date("2026-09-24T19:00:00.000Z");
+    const raw = createValidPolicy({ snapshot_date: "2026-09-25" });
+    const policy = loadPolicy(raw, istEarlyMorning);
+    expect(policy.snapshot_date).toBe("2026-09-25");
+  });
+
+  it("throws PolicyError if snapshot_date is +2 days or further in the future (R-4)", () => {
+    // baseNow is 2026-09-25T12:00:00Z. Snapshot 2026-09-27 is +2 days ahead, rejected.
+    const rawPlusTwo = createValidPolicy({ snapshot_date: "2026-09-27" });
+    expect(() => loadPolicy(rawPlusTwo, baseNow)).toThrow(PolicyError);
   });
 });

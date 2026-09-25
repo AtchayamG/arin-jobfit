@@ -127,6 +127,17 @@ describe("WP-SH-002: Capability Evaluation Engine", () => {
     const staleDecision = evaluate(policy, "l1.provider_job_search", day91);
     expect(staleDecision.allowed).toBe(false);
     expect(staleDecision.error_code).toBe("POLICY_STALE");
+
+    // R-4: snapshot +1 day ahead (evaluated at 00:30 IST on snapshot day) -> allowed (age -1 treated as 0)
+    const istEarlyMorning = new Date("2026-09-24T19:00:00.000Z");
+    const istDecision = evaluate(policy, "l1.provider_job_search", istEarlyMorning);
+    expect(istDecision.allowed).toBe(true);
+
+    // R-4: snapshot +2 days ahead -> denied POLICY_STALE (age -2 < 0)
+    const twoDaysBefore = new Date("2026-09-23T12:00:00.000Z");
+    const twoDaysEarlyDecision = evaluate(policy, "l1.provider_job_search", twoDaysBefore);
+    expect(twoDaysEarlyDecision.allowed).toBe(false);
+    expect(twoDaysEarlyDecision.error_code).toBe("POLICY_STALE");
   });
 
   it("always denies L4 capabilities independent of configuration", () => {

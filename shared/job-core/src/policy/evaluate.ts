@@ -22,7 +22,8 @@ export function calculateSnapshotAgeDays(snapshotDateStr: string, now: Date): nu
   const day = Number(dayStr);
   const snapTime = Date.UTC(year, month - 1, day);
   const nowDayTime = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
-  return Math.floor((nowDayTime - snapTime) / 86400000);
+  const diffDays = Math.floor((nowDayTime - snapTime) / 86400000);
+  return diffDays === -1 ? 0 : diffDays;
 }
 
 /**

@@ -78,6 +78,12 @@ describe("WP-SH-002 Adversarial: Security, Bypass, and Invariants", () => {
       expect(calculateSnapshotAgeDays("bad-date", baseNow)).toBe(Number.POSITIVE_INFINITY);
     });
 
+    it("treats age -1 as 0 and age -2 as negative in calculateSnapshotAgeDays (R-4)", () => {
+      // baseNow is 2026-09-25T12:00:00Z
+      expect(calculateSnapshotAgeDays("2026-09-26", baseNow)).toBe(0);
+      expect(calculateSnapshotAgeDays("2026-09-27", baseNow)).toBe(-2);
+    });
+
     it("marks policyStatus as stale if snapshot_date is future relative to now", () => {
       const policy = {
         ...getBasePolicy(),
