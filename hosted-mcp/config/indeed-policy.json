@@ -1,0 +1,72 @@
+{
+  "policy_version": "1",
+  "product": "arin-jobfit-hosted-indeed",
+  "provider": "indeed",
+  "snapshot_date": "2026-09-25",
+  "stale_after_days": 90,
+  "partner_approval_recorded": false,
+  "capabilities": [
+    {
+      "id": "l0.analysis",
+      "level": "L0",
+      "status": "enabled",
+      "reason": "Deterministic stateless analysis of user-provided job descriptions (pure function, no external I/O).",
+      "approval_ref": null,
+      "sources": ["https://docs.indeed.com/legal-terms/developer-agreement"]
+    },
+    {
+      "id": "hosted.retain_relayed_content",
+      "level": "L1",
+      "status": "blocked_by_provider_approval",
+      "reason": "Retention of relayed Indeed content in hosted mode requires partner approval.",
+      "approval_ref": null,
+      "sources": [
+        "https://docs.indeed.com/legal-terms/developer-agreement",
+        "https://docs.indeed.com/mcp/"
+      ]
+    },
+    {
+      "id": "l1.provider_job_search",
+      "level": "L1",
+      "status": "blocked_by_provider_approval",
+      "reason": "Indeed provider job search requires written partner agreement.",
+      "approval_ref": null,
+      "sources": [
+        "https://docs.indeed.com/getstarted/partner-console",
+        "https://docs.indeed.com/mcp/"
+      ]
+    },
+    {
+      "id": "l1.provider_job_detail",
+      "level": "L1",
+      "status": "blocked_by_provider_approval",
+      "reason": "Indeed provider job detail retrieval requires written partner agreement.",
+      "approval_ref": null,
+      "sources": ["https://docs.indeed.com/getstarted/partner-console"]
+    },
+    {
+      "id": "l2.account_profile_read",
+      "level": "L2",
+      "status": "blocked_by_provider_approval",
+      "reason": "Indeed account profile reading requires OAuth approval and partner agreement.",
+      "approval_ref": null,
+      "sources": ["https://docs.indeed.com/legal-terms/oauth"]
+    },
+    {
+      "id": "l3.account_write",
+      "level": "L3",
+      "status": "blocked_by_provider_approval",
+      "reason": "Indeed account write operations require explicit partner agreement.",
+      "approval_ref": null,
+      "sources": ["https://docs.indeed.com/legal-terms/developer-agreement"]
+    },
+    {
+      "id": "l4.application_submit",
+      "level": "L4",
+      "status": "disabled",
+      "reason": "out of scope v1",
+      "approval_ref": null,
+      "sources": ["https://docs.indeed.com/legal-terms/developer-agreement"]
+    }
+  ]
+}
