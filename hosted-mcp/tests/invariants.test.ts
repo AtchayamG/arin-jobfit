@@ -3,11 +3,11 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { policy } from "@jpm/job-core";
-import policyJson from "../config/policy.json" with { type: "json" };
+import naukriPolicyJson from "../config/naukri-policy.json" with { type: "json" };
 import { handleFitScore, handleJdAnalyze } from "../src/tools.js";
 import { sampleJob, sampleProfile } from "./fixtures.js";
 
-const testPolicy = policy.loadPolicy(policyJson, new Date("2026-09-25T00:00:00Z"));
+const testPolicy = policy.loadPolicy(naukriPolicyJson, new Date("2026-09-25T00:00:00Z"));
 
 describe("Invariant Tests — Hosted MCP", () => {
   it("enforces no store module, no sqlite, and no fs write APIs in src/", () => {

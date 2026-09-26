@@ -3,7 +3,7 @@ import type { AddressInfo } from "node:net";
 import { Readable } from "node:stream";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { policy } from "@jpm/job-core";
-import policyJson from "../config/policy.json" with { type: "json" };
+import naukriPolicyJson from "../config/naukri-policy.json" with { type: "json" };
 import { createRequestHandler } from "../src/http.js";
 import { readBodyWithLimit, TokenBucketRateLimiter, validateHostHeader } from "../src/security.js";
 import {
@@ -14,9 +14,10 @@ import {
   handleJdAnalyze,
 } from "../src/tools.js";
 import { resolveJob, resolveProfile } from "../src/resolve.js";
+import { createHostedMcpServer, createIndeedServer, createNaukriServer } from "../src/server.js";
 import { sampleJob, sampleProfile } from "./fixtures.js";
 
-const testPolicy = policy.loadPolicy(policyJson, new Date("2026-09-25T00:00:00Z"));
+const testPolicy = policy.loadPolicy(naukriPolicyJson, new Date("2026-09-25T00:00:00Z"));
 
 describe("Edge Cases and Failure Paths", () => {
   let server: Server;
@@ -90,12 +91,12 @@ describe("Edge Cases and Failure Paths", () => {
     expect(fastProf.profile.profile_id).toBe(resolvedProf.profile.profile_id);
   });
 
-  it("covers portal: indeed in jd_analyze", () => {
+  it("covers provider: indeed in jd_analyze", () => {
     const indeedJob = {
       ...sampleJob,
       source_url: "https://www.indeed.com/viewjob?jk=12345",
     };
-    const res = handleJdAnalyze({ job: indeedJob, portal: "indeed" }, testPolicy);
+    const res = handleJdAnalyze({ job: indeedJob }, testPolicy, new Date(), "indeed");
     expect(res.isError).toBe(false);
     const data = res.structuredContent.data as { job: { provider: string } };
     expect(data.job.provider).toBe("indeed");
@@ -120,5 +121,14 @@ describe("Edge Cases and Failure Paths", () => {
 
     const r5 = handleApplicationHandoff({ job: brokenJob }, testPolicy);
     expect(r5.isError).toBe(true);
+  });
+
+  it("verifies server creation helpers", () => {
+    const s1 = createHostedMcpServer(testPolicy);
+    expect(s1).toBeDefined();
+    const s2 = createNaukriServer(testPolicy);
+    expect(s2).toBeDefined();
+    const s3 = createIndeedServer(testPolicy);
+    expect(s3).toBeDefined();
   });
 });

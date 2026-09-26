@@ -14,20 +14,14 @@ export type Policy = policy.Policy;
 
 export function resolveJob(
   jobParam: JdAnalyzeInput["job"] | Job,
-  portal?: "naukri" | "indeed" | "other",
+  provider: "naukri" | "indeed" = "naukri",
   now: Date = new Date(),
 ): { job: Job; requirements: Requirements; warnings: Warning[] } {
   if ("job_id" in jobParam && "required_skills" in jobParam) {
     const requirements = extractRequirements(jobParam);
     return { job: jobParam, requirements, warnings: jobParam.flags };
   }
-  const provider = portal === "indeed" ? "indeed" : "naukri";
-  const hostAllowlist =
-    portal === "indeed"
-      ? sanitize.INDEED_HOSTS
-      : portal === "naukri"
-        ? sanitize.NAUKRI_HOSTS
-        : [...sanitize.NAUKRI_HOSTS, ...sanitize.INDEED_HOSTS];
+  const hostAllowlist = provider === "indeed" ? sanitize.INDEED_HOSTS : sanitize.NAUKRI_HOSTS;
   const ingest = ingestPipeline(
     {
       title: jobParam.title && jobParam.title.trim().length > 0 ? jobParam.title : "Untitled Job",

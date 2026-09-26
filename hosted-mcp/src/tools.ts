@@ -32,15 +32,21 @@ function createCtx(tool: string, provider: "naukri" | "indeed", p: Policy): Enve
   };
 }
 
+function resolveProvider(p: Policy, override?: "naukri" | "indeed"): "naukri" | "indeed" {
+  if (override) return override;
+  return p.provider === "indeed" ? "indeed" : "naukri";
+}
+
 export function handleJdAnalyze(
   args: JdAnalyzeInput,
   p: Policy,
   now: Date = new Date(),
+  overrideProvider?: "naukri" | "indeed",
 ): CallToolResultLike {
-  const provider = args.portal === "indeed" ? "indeed" : "naukri";
+  const provider = resolveProvider(p, overrideProvider);
   const ctx = createCtx("jd_analyze", provider, p);
   try {
-    const { job, requirements, warnings } = resolveJob(args.job, args.portal, now);
+    const { job, requirements, warnings } = resolveJob(args.job, provider, now);
     const data = {
       job,
       requirements,
@@ -52,7 +58,7 @@ export function handleJdAnalyze(
   } catch (err) {
     return toCallToolResult(
       fail(ctx, "INVALID_INPUT", (err as Error).message, {
-        remediation: "Check job description and portal parameters, then retry.",
+        remediation: "Check job description parameters, then retry.",
       }),
     );
   }
@@ -62,13 +68,13 @@ export function handleFitScore(
   args: FitScoreInput,
   p: Policy,
   now: Date = new Date(),
+  overrideProvider?: "naukri" | "indeed",
 ): CallToolResultLike {
-  const ctx = createCtx("fit_score", "naukri", p);
+  const provider = resolveProvider(p, overrideProvider);
+  const ctx = createCtx("fit_score", provider, p);
   try {
-    const { job, requirements, warnings: jobWarnings } = resolveJob(args.job, undefined, now);
+    const { job, requirements, warnings: jobWarnings } = resolveJob(args.job, provider, now);
     const { profile, profileRef } = resolveProfile(args.profile, now);
-    ctx.provider = job.provider === "indeed" ? "indeed" : "naukri";
-    ctx.serverName = job.provider === "indeed" ? "indeed-mcp" : "naukri-mcp";
     const fitOutput = match.computeFit(job, requirements, profile, { profileRef });
     const explanation = match.explainMatch(fitOutput.result);
     const data = { ...fitOutput.result, explanation };
@@ -89,13 +95,13 @@ export function handleCvNotes(
   args: CvNotesInput,
   p: Policy,
   now: Date = new Date(),
+  overrideProvider?: "naukri" | "indeed",
 ): CallToolResultLike {
-  const ctx = createCtx("cv_notes", "naukri", p);
+  const provider = resolveProvider(p, overrideProvider);
+  const ctx = createCtx("cv_notes", provider, p);
   try {
-    const { job, requirements, warnings } = resolveJob(args.job, undefined, now);
+    const { job, requirements, warnings } = resolveJob(args.job, provider, now);
     const { profile, profileRef } = resolveProfile(args.profile, now);
-    ctx.provider = job.provider === "indeed" ? "indeed" : "naukri";
-    ctx.serverName = job.provider === "indeed" ? "indeed-mcp" : "naukri-mcp";
     const data = prepare.buildCvNotes(job, requirements, profile, profileRef);
     const envelope = warnings.length > 0 ? partial(ctx, data, { warnings }) : ok(ctx, data);
     return toCallToolResult(envelope);
@@ -112,13 +118,13 @@ export function handleInterviewPrep(
   args: InterviewPrepInput,
   p: Policy,
   now: Date = new Date(),
+  overrideProvider?: "naukri" | "indeed",
 ): CallToolResultLike {
-  const ctx = createCtx("interview_prep", "naukri", p);
+  const provider = resolveProvider(p, overrideProvider);
+  const ctx = createCtx("interview_prep", provider, p);
   try {
-    const { job, requirements, warnings } = resolveJob(args.job, undefined, now);
+    const { job, requirements, warnings } = resolveJob(args.job, provider, now);
     const { profile } = resolveProfile(args.profile, now);
-    ctx.provider = job.provider === "indeed" ? "indeed" : "naukri";
-    ctx.serverName = job.provider === "indeed" ? "indeed-mcp" : "naukri-mcp";
     const data = prepare.buildInterviewPlan(job, requirements, profile);
     const envelope = warnings.length > 0 ? partial(ctx, data, { warnings }) : ok(ctx, data);
     return toCallToolResult(envelope);
@@ -135,12 +141,12 @@ export function handleApplicationHandoff(
   args: ApplicationHandoffInput,
   p: Policy,
   now: Date = new Date(),
+  overrideProvider?: "naukri" | "indeed",
 ): CallToolResultLike {
-  const ctx = createCtx("application_handoff", "naukri", p);
+  const provider = resolveProvider(p, overrideProvider);
+  const ctx = createCtx("application_handoff", provider, p);
   try {
-    const { job, warnings } = resolveJob(args.job, undefined, now);
-    ctx.provider = job.provider === "indeed" ? "indeed" : "naukri";
-    ctx.serverName = job.provider === "indeed" ? "indeed-mcp" : "naukri-mcp";
+    const { job, warnings } = resolveJob(args.job, provider, now);
     const handoff = prepare.buildApplicationHandoff(job);
     const combinedWarnings = [...warnings, ...handoff.warnings];
     const envelope =
@@ -160,8 +166,13 @@ export function handleApplicationHandoff(
   }
 }
 
-export function handleCapabilitiesList(p: Policy, now: Date = new Date()): CallToolResultLike {
-  const ctx = createCtx("capabilities_list", "naukri", p);
+export function handleCapabilitiesList(
+  p: Policy,
+  now: Date = new Date(),
+  overrideProvider?: "naukri" | "indeed",
+): CallToolResultLike {
+  const provider = resolveProvider(p, overrideProvider);
+  const ctx = createCtx("capabilities_list", provider, p);
   try {
     const data = policy.listCapabilities(p, now);
     return toCallToolResult(ok(ctx, data));

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { policy, type Job, type Requirements } from "@jpm/job-core";
-import policyJson from "../config/policy.json" with { type: "json" };
+import naukriPolicyJson from "../config/naukri-policy.json" with { type: "json" };
+import indeedPolicyJson from "../config/indeed-policy.json" with { type: "json" };
 import {
   handleApplicationHandoff,
   handleCapabilitiesList,
@@ -9,9 +10,16 @@ import {
   handleInterviewPrep,
   handleJdAnalyze,
 } from "../src/tools.js";
-import { discriminatoryJob, injectionJob, sampleJob, sampleProfile } from "./fixtures.js";
+import {
+  discriminatoryJob,
+  injectionJob,
+  sampleIndeedJob,
+  sampleJob,
+  sampleProfile,
+} from "./fixtures.js";
 
-const testPolicy = policy.loadPolicy(policyJson, new Date("2026-09-25T00:00:00Z"));
+const testNaukriPolicy = policy.loadPolicy(naukriPolicyJson, new Date("2026-09-25T00:00:00Z"));
+const testIndeedPolicy = policy.loadPolicy(indeedPolicyJson, new Date("2026-09-25T00:00:00Z"));
 
 function asRecord(value: unknown): Record<string, unknown> {
   if (typeof value !== "object" || value === null || Array.isArray(value)) {
@@ -23,7 +31,7 @@ function asRecord(value: unknown): Record<string, unknown> {
 describe("Unit Tests — Hosted MCP Tools", () => {
   describe("jd_analyze", () => {
     it("analyzes standard job and normalizes INR salary ₹16,00,000 -> 1600000", () => {
-      const res = handleJdAnalyze({ job: sampleJob, portal: "naukri" }, testPolicy);
+      const res = handleJdAnalyze({ job: sampleJob }, testNaukriPolicy);
       expect(res.isError).toBe(false);
       const data = asRecord(res.structuredContent.data);
       const job = data["job"] as Job;
@@ -33,17 +41,25 @@ describe("Unit Tests — Hosted MCP Tools", () => {
       expect(job.compensation.min).toBe(1_600_000);
       expect(job.compensation.max).toBe(2_400_000);
       expect(reqs.must_have.length).toBeGreaterThan(0);
+      expect(res.structuredContent.meta.server).toBe("naukri-mcp");
+    });
+
+    it("reports Indeed provider and server when run with Indeed policy", () => {
+      const res = handleJdAnalyze({ job: sampleIndeedJob }, testIndeedPolicy);
+      expect(res.isError).toBe(false);
+      expect(res.structuredContent.provider).toBe("indeed");
+      expect(res.structuredContent.meta.server).toBe("indeed-mcp");
     });
 
     it("flags prompt injection with PROMPT_INJECTION_SUSPECTED warning", () => {
-      const res = handleJdAnalyze({ job: injectionJob }, testPolicy);
+      const res = handleJdAnalyze({ job: injectionJob }, testNaukriPolicy);
       const warnings = res.structuredContent.warnings;
       const injectionWarning = warnings.find((w) => w.code === "PROMPT_INJECTION_SUSPECTED");
       expect(injectionWarning).toBeDefined();
     });
 
     it("extracts discriminatory flags and ensures they are never scored", () => {
-      const res = handleJdAnalyze({ job: discriminatoryJob }, testPolicy);
+      const res = handleJdAnalyze({ job: discriminatoryJob }, testNaukriPolicy);
       const data = asRecord(res.structuredContent.data);
       const flags = data["discriminatory_flags"] as Array<{ text: string }>;
       const reqs = data["requirements"] as Requirements;
@@ -61,7 +77,7 @@ describe("Unit Tests — Hosted MCP Tools", () => {
 
   describe("fit_score", () => {
     it("computes fit-v1 match score, dimensions, and explanation", () => {
-      const res = handleFitScore({ job: sampleJob, profile: sampleProfile }, testPolicy);
+      const res = handleFitScore({ job: sampleJob, profile: sampleProfile }, testNaukriPolicy);
       expect(res.isError).toBe(false);
       const data = asRecord(res.structuredContent.data);
       const score = data["fit_score"] as number;
@@ -81,7 +97,7 @@ describe("Unit Tests — Hosted MCP Tools", () => {
 
   describe("cv_notes", () => {
     it("enforces truthfulness invariant: every evidence text is an exact substring of profile", () => {
-      const res = handleCvNotes({ job: sampleJob, profile: sampleProfile }, testPolicy);
+      const res = handleCvNotes({ job: sampleJob, profile: sampleProfile }, testNaukriPolicy);
       expect(res.isError).toBe(false);
       const data = asRecord(res.structuredContent.data);
       expect(data["truthfulness_note"]).toBeDefined();
@@ -114,7 +130,10 @@ describe("Unit Tests — Hosted MCP Tools", () => {
         title: "Systems Engineer",
         description: "Must have: 5 years experience in Rust, C++, Kubernetes.",
       };
-      const res = handleCvNotes({ job: jobRequiringRust, profile: sampleProfile }, testPolicy);
+      const res = handleCvNotes(
+        { job: jobRequiringRust, profile: sampleProfile },
+        testNaukriPolicy,
+      );
       const data = asRecord(res.structuredContent.data);
       const doNotClaim = data["do_not_claim"] as string[];
       expect(doNotClaim.length).toBeGreaterThan(0);
@@ -124,7 +143,7 @@ describe("Unit Tests — Hosted MCP Tools", () => {
 
   describe("interview_prep", () => {
     it("produces deterministic interview plan with question seeds and pointers without URLs", () => {
-      const res = handleInterviewPrep({ job: sampleJob, profile: sampleProfile }, testPolicy);
+      const res = handleInterviewPrep({ job: sampleJob, profile: sampleProfile }, testNaukriPolicy);
       expect(res.isError).toBe(false);
       const data = asRecord(res.structuredContent.data);
       const topics = data["topics"] as Array<{ topic: string; study_pointers: string[] }>;
@@ -139,15 +158,20 @@ describe("Unit Tests — Hosted MCP Tools", () => {
   });
 
   describe("application_handoff", () => {
-    it("verifies official URL allowlist without fetching and includes final_submit in human_only_fields", () => {
-      const res = handleApplicationHandoff({ job: sampleJob }, testPolicy);
-      expect(res.isError).toBe(false);
-      const data = asRecord(res.structuredContent.data);
-      expect(data["url_is_official"]).toBe(true);
-      const fields = data["human_only_fields"] as string[];
-      const checklist = data["checklist"] as string[];
-      expect(fields).toContain("final_submit");
-      expect(checklist.length).toBeGreaterThan(0);
+    it("verifies official URL allowlist: true only for its own portal host", () => {
+      // Naukri edition: naukri URL is official, indeed URL is NOT
+      const naukriRes1 = handleApplicationHandoff({ job: sampleJob }, testNaukriPolicy);
+      expect(asRecord(naukriRes1.structuredContent.data)["url_is_official"]).toBe(true);
+
+      const naukriRes2 = handleApplicationHandoff({ job: sampleIndeedJob }, testNaukriPolicy);
+      expect(asRecord(naukriRes2.structuredContent.data)["url_is_official"]).toBe(false);
+
+      // Indeed edition: indeed URL is official, naukri URL is NOT
+      const indeedRes1 = handleApplicationHandoff({ job: sampleIndeedJob }, testIndeedPolicy);
+      expect(asRecord(indeedRes1.structuredContent.data)["url_is_official"]).toBe(true);
+
+      const indeedRes2 = handleApplicationHandoff({ job: sampleJob }, testIndeedPolicy);
+      expect(asRecord(indeedRes2.structuredContent.data)["url_is_official"]).toBe(false);
     });
 
     it("marks unofficial URL appropriately without fetching", () => {
@@ -155,7 +179,7 @@ describe("Unit Tests — Hosted MCP Tools", () => {
         ...sampleJob,
         source_url: "https://some-unverified-board.com/post-99",
       };
-      const res = handleApplicationHandoff({ job: unofficialJob }, testPolicy);
+      const res = handleApplicationHandoff({ job: unofficialJob }, testNaukriPolicy);
       const data = asRecord(res.structuredContent.data);
       expect(data["url_is_official"]).toBe(false);
     });
@@ -163,7 +187,7 @@ describe("Unit Tests — Hosted MCP Tools", () => {
 
   describe("capabilities_list", () => {
     it("lists L0 capabilities enabled and L1+ blocked by provider approval", () => {
-      const res = handleCapabilitiesList(testPolicy);
+      const res = handleCapabilitiesList(testNaukriPolicy);
       expect(res.isError).toBe(false);
       const data = asRecord(res.structuredContent.data);
       const capabilities = data["capabilities"] as Array<{

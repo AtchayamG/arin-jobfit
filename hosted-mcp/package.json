@@ -16,7 +16,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --coverage",
     "build": "tsup",
-    "policy:lint": "tsx ../shared/job-core/scripts/policy-lint.ts config/policy.json ../Docs/09_DECISIONS_LOG.md",
+    "policy:lint": "tsx ../shared/job-core/scripts/policy-lint.ts config/naukri-policy.json ../Docs/09_DECISIONS_LOG.md && tsx ../shared/job-core/scripts/policy-lint.ts config/indeed-policy.json ../Docs/09_DECISIONS_LOG.md",
     "verify": "npm run lint && npm run typecheck && npm run build && npm run test && npm run policy:lint"
   },
   "dependencies": {

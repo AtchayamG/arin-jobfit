@@ -21,7 +21,6 @@ const jobParamSchema = z.strictObject({
 
 export const jdAnalyzeInputSchema = z.strictObject({
   job: jobParamSchema,
-  portal: z.enum(["naukri", "indeed", "other"]).optional(),
 });
 
 export const jdAnalyzeDataSchema = z.strictObject({

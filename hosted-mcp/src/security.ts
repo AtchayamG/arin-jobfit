@@ -90,15 +90,20 @@ export function validateHostHeader(
   return allowed.includes(hostname);
 }
 
+const DEFAULT_ALLOWED_ORIGINS = ["https://claude.ai", "https://chatgpt.com"];
+
 export function getCorsHeaders(
   originHeader: string | undefined,
   allowedOriginsEnv: string | undefined,
 ): Record<string, string> | null {
-  if (!allowedOriginsEnv || !originHeader) return null;
-  const allowed = allowedOriginsEnv
-    .split(",")
-    .map((o) => o.trim())
-    .filter((o) => o.length > 0);
+  if (!originHeader) return null;
+  const envOrigins = allowedOriginsEnv
+    ? allowedOriginsEnv
+        .split(",")
+        .map((o) => o.trim())
+        .filter((o) => o.length > 0)
+    : [];
+  const allowed = [...DEFAULT_ALLOWED_ORIGINS, ...envOrigins];
 
   if (allowed.includes(originHeader)) {
     return {
