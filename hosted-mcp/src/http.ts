@@ -111,7 +111,7 @@ export function createRequestHandler(options: AppOptions) {
       return;
     }
 
-    if (path === "/healthz" && method === "GET") {
+    if ((path === "/healthz" || path === "/health") && method === "GET") {
       sendJson(res, 200, { status: "ok", version });
       finish(200);
       return;
