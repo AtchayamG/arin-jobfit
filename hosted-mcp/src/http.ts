@@ -4,6 +4,7 @@ import { policy } from "@jpm/job-core";
 import { createHostedMcpServer } from "./server.js";
 import {
   getCorsHeaders,
+  getClientIp,
   PayloadTooLargeError,
   readBodyWithLimit,
   TokenBucketRateLimiter,
@@ -19,6 +20,7 @@ export interface AppOptions {
   allowedHosts?: string;
   allowedOrigins?: string;
   rateLimiter?: TokenBucketRateLimiter;
+  trustProxy?: boolean;
 }
 
 const PRIVACY_TEXT =
@@ -60,6 +62,7 @@ export function createRequestHandler(options: AppOptions) {
   const isProduction = options.isProduction ?? process.env.NODE_ENV === "production";
   const allowedHosts = options.allowedHosts ?? process.env.ALLOWED_HOSTS;
   const allowedOrigins = options.allowedOrigins ?? process.env.ALLOWED_ORIGINS;
+  const trustProxy = options.trustProxy ?? process.env.TRUST_PROXY === "1";
 
   return async (req: IncomingMessage, res: ServerResponse): Promise<void> => {
     const start = Date.now();
@@ -99,7 +102,7 @@ export function createRequestHandler(options: AppOptions) {
       return;
     }
 
-    const ip = req.socket.remoteAddress ?? "unknown";
+    const ip = getClientIp(req, trustProxy);
     const rateCheck = rateLimiter.consume(ip);
     if (!rateCheck.allowed) {
       const retryAfter = rateCheck.retryAfterSeconds ?? 1;

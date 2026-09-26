@@ -154,3 +154,17 @@ export function readBodyWithLimit(
     req.on("error", onError);
   });
 }
+
+export function getClientIp(req: IncomingMessage, trustProxy = false): string {
+  if (trustProxy) {
+    const header = req.headers["x-forwarded-for"];
+    if (typeof header === "string") {
+      const first = header.split(",")[0]?.trim();
+      if (first) return first;
+    } else if (Array.isArray(header) && header.length > 0 && header[0]) {
+      const first = header[0].split(",")[0]?.trim();
+      if (first) return first;
+    }
+  }
+  return req.socket.remoteAddress ?? "unknown";
+}

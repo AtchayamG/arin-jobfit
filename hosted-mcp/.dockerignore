@@ -7,4 +7,3 @@ tests
 .prettierrc.json
 eslint.config.js
 vitest.config.ts
-tsup.config.ts

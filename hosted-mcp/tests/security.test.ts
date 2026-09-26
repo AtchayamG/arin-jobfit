@@ -4,7 +4,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { policy } from "@jpm/job-core";
 import policyJson from "../config/policy.json" with { type: "json" };
 import { createRequestHandler } from "../src/http.js";
-import { TokenBucketRateLimiter } from "../src/security.js";
+import { getClientIp, TokenBucketRateLimiter } from "../src/security.js";
 
 const testPolicy = policy.loadPolicy(policyJson, new Date("2026-09-25T00:00:00Z"));
 
@@ -143,5 +143,82 @@ describe("Security Tests — Hosted MCP", () => {
     expect(optionsRes.headers.get("access-control-allow-origin")).toBe(
       "https://trusted-client.com",
     );
+  });
+
+  it("extracts client IP accurately across trustProxy modes (R-15)", () => {
+    const fakeSocket = { remoteAddress: "127.0.0.1" };
+
+    // Mode 1: trustProxy = false (default) — spoofed header ignored
+    const reqWithoutTrust = {
+      headers: { "x-forwarded-for": "203.0.113.195, 70.41.3.18" },
+      socket: fakeSocket,
+    } as unknown as http.IncomingMessage;
+    expect(getClientIp(reqWithoutTrust, false)).toBe("127.0.0.1");
+
+    // Mode 2: trustProxy = true — first IP in X-Forwarded-For used
+    const reqWithTrust = {
+      headers: { "x-forwarded-for": "203.0.113.195, 70.41.3.18" },
+      socket: fakeSocket,
+    } as unknown as http.IncomingMessage;
+    expect(getClientIp(reqWithTrust, true)).toBe("203.0.113.195");
+
+    // Mode 2 edge cases: array header or missing header
+    const reqArrayHeader = {
+      headers: { "x-forwarded-for": ["198.51.100.1, 10.0.0.1"] },
+      socket: fakeSocket,
+    } as unknown as http.IncomingMessage;
+    expect(getClientIp(reqArrayHeader, true)).toBe("198.51.100.1");
+
+    const reqMissingHeader = {
+      headers: {},
+      socket: fakeSocket,
+    } as unknown as http.IncomingMessage;
+    expect(getClientIp(reqMissingHeader, true)).toBe("127.0.0.1");
+  });
+
+  it("enforces separate rate limit buckets when TRUST_PROXY is enabled", async () => {
+    const customLimiter = new TokenBucketRateLimiter(2, 2);
+    const proxyHandler = createRequestHandler({
+      policy: testPolicy,
+      rateLimiter: customLimiter,
+      trustProxy: true,
+      allowedHosts: "localhost,127.0.0.1",
+    });
+    const proxyServer = createServer((req, res) => {
+      void proxyHandler(req, res);
+    });
+    await new Promise<void>((resolve) => {
+      proxyServer.listen(0, "127.0.0.1", () => {
+        resolve();
+      });
+    });
+    const port = (proxyServer.address() as AddressInfo).port;
+    const url = `http://127.0.0.1:${String(port)}`;
+
+    try {
+      // IP A uses up its 2 tokens
+      await fetch(`${url}/healthz`, {
+        headers: { Host: "localhost", "X-Forwarded-For": "100.0.0.1" },
+      });
+      await fetch(`${url}/healthz`, {
+        headers: { Host: "localhost", "X-Forwarded-For": "100.0.0.1" },
+      });
+      const resA = await fetch(`${url}/healthz`, {
+        headers: { Host: "localhost", "X-Forwarded-For": "100.0.0.1" },
+      });
+      expect(resA.status).toBe(429);
+
+      // IP B still has tokens available despite IP A being rate limited
+      const resB = await fetch(`${url}/healthz`, {
+        headers: { Host: "localhost", "X-Forwarded-For": "200.0.0.1" },
+      });
+      expect(resB.status).toBe(200);
+    } finally {
+      await new Promise<void>((resolve) => {
+        proxyServer.close(() => {
+          resolve();
+        });
+      });
+    }
   });
 });

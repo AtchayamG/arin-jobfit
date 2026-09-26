@@ -9,9 +9,23 @@ export default defineConfig({
   platform: "node",
   target: "node22",
   bundle: true,
-  splitting: false,
   noExternal: [/.*/],
   external: ["node:*"],
+  esbuildPlugins: [
+    {
+      name: "stub-unused-core-modules",
+      setup(build) {
+        build.onResolve({ filter: /(store|mcp)\/index/ }, (args) => ({
+          path: args.path,
+          namespace: "stub-unused",
+        }));
+        build.onLoad({ filter: /.*/, namespace: "stub-unused" }, () => ({
+          contents: "export default {};",
+          loader: "js",
+        }));
+      },
+    },
+  ],
   esbuildOptions(options) {
     options.alias = { ...options.alias, "@jpm/job-core": jobCore };
   },
