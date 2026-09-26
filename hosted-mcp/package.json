@@ -1,0 +1,40 @@
+{
+  "name": "arin-jobfit-hosted",
+  "version": "0.1.0",
+  "description": "Arin JobFit (Hosted stateless edition) — HTTP MCP server for job-description analysis. Independent; not affiliated with Naukri or Indeed.",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js",
+    "lint": "eslint src tests && prettier --check src tests package.json tsconfig.json tsup.config.ts vitest.config.ts eslint.config.js .prettierrc.json docs",
+    "format": "prettier --write src tests package.json tsconfig.json tsup.config.ts vitest.config.ts eslint.config.js .prettierrc.json docs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --coverage",
+    "build": "tsup",
+    "policy:lint": "tsx ../shared/job-core/scripts/policy-lint.ts config/policy.json ../Docs/09_DECISIONS_LOG.md",
+    "verify": "npm run lint && npm run typecheck && npm run build && npm run test && npm run policy:lint"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "^2.1.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@modelcontextprotocol/client": "^2.1.0",
+    "@types/node": "^26.6.2",
+    "@vitest/coverage-v8": "^5.0.1",
+    "ajv": "^8.17.1",
+    "eslint": "^10.11.0",
+    "prettier": "^3.9.9",
+    "tsup": "^8.5.1",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.70.1",
+    "vitest": "^5.0.1"
+  }
+}

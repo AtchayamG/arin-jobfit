@@ -23,6 +23,7 @@ jobs:
             shared/job-core/package-lock.json
             naukri-mcp/package-lock.json
             indeed-mcp/package-lock.json
+            hosted-mcp/package-lock.json
       - name: Verify job-core
         working-directory: shared/job-core
         run: npm ci
@@ -52,6 +53,18 @@ jobs:
         run: npm run verify
       - name: Audit Indeed production dependencies
         working-directory: indeed-mcp
+        run: npm audit --omit=dev --audit-level=high
+      - name: Install Hosted edition
+        working-directory: hosted-mcp
+        run: npm ci
+      - name: Build Hosted edition
+        working-directory: hosted-mcp
+        run: npm run build
+      - name: Run Hosted checks
+        working-directory: hosted-mcp
+        run: npm run verify
+      - name: Audit Hosted production dependencies
+        working-directory: hosted-mcp
         run: npm audit --omit=dev --audit-level=high
 
   gitleaks:

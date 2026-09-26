@@ -1,0 +1,10 @@
+node_modules
+coverage
+.git
+.gitignore
+tests
+*.md
+.prettierrc.json
+eslint.config.js
+vitest.config.ts
+tsup.config.ts

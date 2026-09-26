@@ -1,0 +1,76 @@
+{
+  "policy_version": "1",
+  "product": "arin-jobfit-hosted",
+  "provider": "naukri",
+  "snapshot_date": "2026-09-25",
+  "stale_after_days": 90,
+  "partner_approval_recorded": false,
+  "capabilities": [
+    {
+      "id": "l0.analysis",
+      "level": "L0",
+      "status": "enabled",
+      "reason": "Deterministic stateless analysis of user-provided job descriptions (pure function, no external I/O).",
+      "approval_ref": null,
+      "sources": [
+        "https://recruiterzone.naukri.com/make-your-job-posting-apply-process-seamless/"
+      ]
+    },
+    {
+      "id": "hosted.retain_relayed_content",
+      "level": "L1",
+      "status": "blocked_by_provider_approval",
+      "reason": "Retention of relayed content in hosted mode requires partner approval.",
+      "approval_ref": null,
+      "sources": [
+        "https://recruiterzone.naukri.com/make-your-job-posting-apply-process-seamless/"
+      ]
+    },
+    {
+      "id": "l1.provider_job_search",
+      "level": "L1",
+      "status": "blocked_by_provider_approval",
+      "reason": "Provider job search requires written partner agreement.",
+      "approval_ref": null,
+      "sources": [
+        "https://recruiterzone.naukri.com/make-your-job-posting-apply-process-seamless/"
+      ]
+    },
+    {
+      "id": "l1.provider_job_detail",
+      "level": "L1",
+      "status": "blocked_by_provider_approval",
+      "reason": "Provider job detail retrieval requires written partner agreement.",
+      "approval_ref": null,
+      "sources": ["https://developers.zwayam.com/customdomain"]
+    },
+    {
+      "id": "l2.account_profile_read",
+      "level": "L2",
+      "status": "blocked_by_provider_approval",
+      "reason": "Account profile reading requires OAuth approval and partner agreement.",
+      "approval_ref": null,
+      "sources": ["https://developers.zwayam.com/customdomain"]
+    },
+    {
+      "id": "l3.account_write",
+      "level": "L3",
+      "status": "blocked_by_provider_approval",
+      "reason": "Account write operations require explicit partner agreement.",
+      "approval_ref": null,
+      "sources": [
+        "https://recruiterzone.naukri.com/make-your-job-posting-apply-process-seamless/"
+      ]
+    },
+    {
+      "id": "l4.application_submit",
+      "level": "L4",
+      "status": "disabled",
+      "reason": "out of scope v1",
+      "approval_ref": null,
+      "sources": [
+        "https://recruiterzone.naukri.com/make-your-job-posting-apply-process-seamless/"
+      ]
+    }
+  ]
+}
